@@ -1,7 +1,6 @@
 #include "WinUser.h"
 
-//creates a Microsift specefic window
-void * MS_CreateWindow(const wchar_t * name, unsigned int SizeX, unsigned int SizeY)
+void* MS_CreateWindow(const wchar_t* name, unsigned int SizeX, unsigned int SizeY)
 {
     //describe the window
     WNDCLASSW wc = {};
@@ -13,7 +12,6 @@ void * MS_CreateWindow(const wchar_t * name, unsigned int SizeX, unsigned int Si
     wc.hInstance = GetModuleHandle(0);
     //windows Cursor
     wc.hCursor = LoadCursor(0, IDC_IBEAM);
-    //store description for later use in the CreateWindow function 
 
     //get screen screen width
     int screenWidth = GetSystemMetrics(SM_CXSCREEN);
@@ -42,20 +40,24 @@ void * MS_CreateWindow(const wchar_t * name, unsigned int SizeX, unsigned int Si
 
     //create window
     HWND hwnd = CreateWindow(
-    name, //window class name 
-    name, //window display name 
-    WS_OVERLAPPEDWINDOW, // commons window styles
-    xpos, ypos, //pos x and y
-    windowWidth, windowHeight, //width and height 
-    0, 0,
-    wc.hInstance,//application instance
-    0);
+        name, //window class name 
+        name, //window display name 
+        WS_OVERLAPPEDWINDOW, // commons window styles
+        xpos, ypos, //pos x and y
+        windowWidth, windowHeight, //width and height 
+        0, 0,
+        wc.hInstance,//application instance
+        0);
+    if (hwnd == nullptr)
+    {
+        MS_ERROR(L"MS window creation error", L"Failed to create window in File: ");
+    }
     //make window visable
     ShowWindow(hwnd, SW_SHOW);
     return hwnd;
 }
-//update window
-void MS_UpdateWindow(void * hwnd)
+
+void MS_UpdateWindow(void* hwnd)
 {
     //check for messages and call event handlers
     MSG msg = {};

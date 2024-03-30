@@ -11,5 +11,6 @@
     <ClInclude Include="Libs\DefualtLibs\MSWindowManager\WinUser.h" />
     <ClInclude Include="Libs\DefualtLibs\DefualtLibsList.h" />
     <ClInclude Include="Libs\LibsList.h" />
+    <ClInclude Include="Libs\DefualtLibs\VDebug\VDebug.h" />
   </ItemGroup>
 </Project>

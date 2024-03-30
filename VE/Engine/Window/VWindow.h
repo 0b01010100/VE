@@ -1,6 +1,6 @@
 #pragma once
 #include <req.h>
-namespace VE 
+namespace VE
 {
 	namespace Window
 	{
