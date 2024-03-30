@@ -17,7 +17,7 @@ namespace VE
 			//for updateting the window 
 			void Update();
 		private:
-			//used to point to an Api specfic function that will create the window
+			//used to point to an Api specfic function that will update the window
 			void(*update)(void* phwnd);
 			//used to point to an Api specfic id for a window
 			void* phwnd;
