@@ -1,6 +1,6 @@
-#include "WinUser.h"
+#include "MSWinUser.h"
 
-void* MS_CreateWindow(const wchar_t* name, unsigned int SizeX, unsigned int SizeY)
+void * MS_CreateWindow(const wchar_t * name, long SizeX, long SizeY)
 {
     //describe the window
     WNDCLASSW wc = {};
@@ -19,7 +19,7 @@ void* MS_CreateWindow(const wchar_t* name, unsigned int SizeX, unsigned int Size
     int screenHeight = GetSystemMetrics(SM_CYSCREEN);
 
     //register this windows description to be used later in the CreateWindow function
-    RegisterClass(&wc);
+    RegisterClassW(&wc);
 
     //if user typed in zero make the window Width the monitor screen width div by 2
     if (SizeX == 0) SizeX = screenWidth / 2;
@@ -27,7 +27,7 @@ void* MS_CreateWindow(const wchar_t* name, unsigned int SizeX, unsigned int Size
     if (SizeY == 0) SizeY = screenHeight / 2;
 
     //adjust the window size based on the window style and desired client size
-    RECT rc = { 0, 0, SizeX, SizeY };
+    RECT rc = { 0L, 0L, SizeX, SizeY };
     AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, 0);
 
     //find the correct window width and height
@@ -35,20 +35,20 @@ void* MS_CreateWindow(const wchar_t* name, unsigned int SizeX, unsigned int Size
     int windowHeight = rc.bottom - rc.top;
 
     //center window x and y position. Depeneding on your monitor size and the style the window might not be fully centered. maybe off just by a small decimal number, if numberes were not divided evenly
-    int xpos = (screenWidth - windowWidth) / 2.0;
-    int ypos = (screenHeight - windowHeight) / 2.0;
+    int xpos = (screenWidth - windowWidth) / 2;
+    int ypos = (screenHeight - windowHeight) / 2;
 
     //create window
     HWND hwnd = CreateWindow(
-        name, //window class name 
-        name, //window display name 
-        WS_OVERLAPPEDWINDOW, // commons window styles
-        xpos, ypos, //pos x and y
-        windowWidth, windowHeight, //width and height 
-        0, 0,
-        wc.hInstance,//application instance
-        0);
-    if (hwnd == nullptr)
+    name, //window class name 
+    name, //window display name 
+    WS_OVERLAPPEDWINDOW, // commons window styles
+    xpos, ypos, //pos x and y
+    windowWidth, windowHeight, //width and height 
+    0, 0,
+    wc.hInstance,//application instance
+    0);
+    if (hwnd == nullptr) 
     {
         MS_ERROR(L"MS window creation error", L"Failed to create window in File: ");
     }
@@ -57,7 +57,7 @@ void* MS_CreateWindow(const wchar_t* name, unsigned int SizeX, unsigned int Size
     return hwnd;
 }
 
-void MS_UpdateWindow(void* hwnd)
+void MS_UpdateWindow(void * hwnd)
 {
     //check for messages and call event handlers
     MSG msg = {};

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace VE
+namespace VE 
 {
 	//used for speciying the Api to use
 	enum class VAPI
