@@ -4,7 +4,7 @@ namespace VE
 {
 	namespace Window
 	{
-		//A window
+		//A WINDOW
 		class VWindow
 		{
 		public:
@@ -19,8 +19,12 @@ namespace VE
 		private:
 			//used to point to an Api specfic function that will update the window
 			void(*update)(void* phwnd) = nullptr;
+		public:
 			//used to point to an Api specfic id for a window
 			void* phwnd = nullptr;
+			
+		public:
+			VAPI renderingApi;
 		};
 	}
 

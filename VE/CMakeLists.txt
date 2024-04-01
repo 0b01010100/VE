@@ -9,6 +9,7 @@ endif()
 # Add engine source files
 add_library(Engine STATIC
     Engine/Window/VWindow.cpp
+    Engine/Graphics/VGraphics.cpp
 )
 # Include directories for engine header files
 target_include_directories(Engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Engine)
@@ -24,11 +25,11 @@ set_target_properties(VE PROPERTIES
     CXX_EXTENSIONS NO
 )
 #if plaform is window include DX11 library
-if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-    message("Oh yea Platform is Windows")
-    target_link_libraries(VE PRIVATE d3d11)
-endif()
-# Link the library to the executable
+#if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    #message("Oh yea Platform is Windows")
+    #target_link_libraries(VE PRIVATE d3d11)
+#endif()
+# Link the libraries to the executable
 target_link_libraries(VE PRIVATE Engine)
 target_link_libraries(VE PRIVATE Libs)
 # Link the Libs library agisnt the Engine library

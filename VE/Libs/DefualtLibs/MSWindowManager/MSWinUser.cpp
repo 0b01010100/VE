@@ -7,7 +7,7 @@ void * MS_CreateWindow(const wchar_t * name, long SizeX, long SizeY)
     //class name
     wc.lpszClassName = name;
     //event handler
-    wc.lpfnWndProc = DefWindowProc;
+    wc.lpfnWndProc = DefWindowProcW;
     //id of the application
     wc.hInstance = GetModuleHandle(0);
     //windows Cursor
@@ -39,7 +39,7 @@ void * MS_CreateWindow(const wchar_t * name, long SizeX, long SizeY)
     int ypos = (screenHeight - windowHeight) / 2;
 
     //create window
-    HWND hwnd = CreateWindow(
+    HWND hwnd = CreateWindowW(
     name, //window class name 
     name, //window display name 
     WS_OVERLAPPEDWINDOW, // commons window styles
@@ -61,6 +61,6 @@ void MS_UpdateWindow(void * hwnd)
 {
     //check for messages and call event handlers
     MSG msg = {};
-    PeekMessage(&msg, (HWND)hwnd, 0, 0, PM_REMOVE);
-    DispatchMessage(&msg);
+    PeekMessageW(&msg, (HWND)hwnd, 0, 0, PM_REMOVE);
+    DispatchMessageW(&msg);
 }

@@ -3,7 +3,7 @@
 namespace VE 
 {
 	//used for speciying the Api to use
-	enum class VAPI
+	enum class VAPI : unsigned char
 	{
 		//Window Api by Microsoft
 		WINDOWS,

@@ -1,9 +1,10 @@
 #include "VWindow.hpp"
 #include <preprocessing.h>
+#include <stdio.h>
 //a window that wiill encapsulate the complexity of window managment
 VE::Window::VWindow::VWindow(const wchar_t* Name, long SizeX, long SizeY, VAPI Api)
 {
-
+	this->renderingApi = Api;
 	//selection of which api to use the create the window
 	switch (Api)
 	{
