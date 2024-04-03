@@ -4,7 +4,10 @@ add_library(Libs STATIC
 	"DefualtLibs/MSWindowManager/MSWinUser.cpp"
 	"DefualtLibs/VDebug/VDebug.h"
 	
- "DefualtLibs/MSGraphicsManager/MSDX11User.h" "DefualtLibs/MSGraphicsManager/MSDX11User.cpp")
+	"DefualtLibs/MSGraphicsManager/MSDX11User.h" 
+	"DefualtLibs/MSGraphicsManager/MSDX11User.cpp"
+	
+)
 
 # Include directories for header files
 target_include_directories(Libs PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")

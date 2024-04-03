@@ -27,7 +27,7 @@ void* initDX11(void* hwnd);
 //@param date -> a pointer to DX11Devices struct, which will represent the DX11 rendering devices and swapChain
 //@param hwnd -> a pointer to HWND__ struct, which is an id for a window
 //We need this id in order to to tell DX11 what window should have the swapchain Buffers
-__declspec(noinline) void DX11_createSwapChain(DX11Devices* rs, HWND hwnd);
+__declspec(noinline) void DX11_createSwapChain(struct DX11Devices* rs, HWND hwnd);
 
 
 //clears the color of the window
@@ -40,7 +40,7 @@ __declspec(noinline) void DX11_clearScreenColor(void* rs, float r, float g, floa
 
 //allows us to present what we drew on the screen
 //@param rs -> a pointer to a DX11Devices which will be represented on a hight level as a render system (or rs)
-void DX11_present(void* rs);
+__declspec(noinline) void DX11_present(void* rs);
 #include<string>
 #include <sstream>
 //Used for Error Handling related to windows only.

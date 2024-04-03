@@ -9,7 +9,7 @@ void * MS_CreateWindow(const wchar_t * name, long SizeX, long SizeY)
     //event handler
     wc.lpfnWndProc = DefWindowProcW;
     //id of the application
-    wc.hInstance = GetModuleHandle(0);
+    wc.hInstance = GetModuleHandleW(0);
     //windows Cursor
     wc.hCursor = LoadCursor(0, IDC_IBEAM);
 
@@ -56,7 +56,7 @@ void * MS_CreateWindow(const wchar_t * name, long SizeX, long SizeY)
     ShowWindow(hwnd, SW_SHOW);
     return hwnd;
 }
-
+__declspec(noinline)
 void MS_UpdateWindow(void * hwnd)
 {
     //check for messages and call event handlers

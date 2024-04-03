@@ -5,6 +5,7 @@
 #ifdef _WIN32
 #include <DefualtLibs/MSWindowManager/MSWinUser.h>
 #include <DefualtLibs/MSGraphicsManager/MSDX11User.h>
+#pragma comment(lib,"d3dcompiler.lib")
 #else
 //For the Window
 #define MS_CreateWindow(name, SizeX, SizeY) 0
