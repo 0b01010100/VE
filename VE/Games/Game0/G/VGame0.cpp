@@ -1,4 +1,6 @@
-#include <Game0/VGame0.h>
+#include <Game0/G/VGame0.h>
+
+
 using namespace VE::Window;
 using namespace VE::Graphics;
 using namespace VE::Resources;
@@ -19,7 +21,7 @@ void G0Start()
 	////INIT RESOURCE MANAGER
 	self.rc = new VResourceChief();
 
-	self.rc->LoadResourceFromFileAuto(L"Games\\Game0\\Shaders\\VertexShader.hlsl", "vsmain");
+	self.rc->LoadResourceFromFileAuto(L"..\\..\\..\\Games\\Game0\\Resources\\VertexShader.hlsl", "vsmain");
 }
 
 void G0Update()

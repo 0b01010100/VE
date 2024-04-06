@@ -1,37 +1,27 @@
 #include <ResourceChief/VResourceChief.hpp>
-#define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
-#include <experimental/filesystem>
-
-#if WIN32
-#include <d3dcompiler.h>
-#endif // WIN32
+#include <preprocessing.h>
 
 VE::Resources::VResourceChief::VResourceChief()
 {
 }
 
-void VE::Resources::VResourceChief::LoadResourceFromFileAuto(const wchar_t* file, const char* entry_point)
+void VE::Resources::VResourceChief::LoadResourceFromFileAuto(const wchar_t* file, const char* entry_point = 0)
 {
-	namespace fs = std::experimental::filesystem;
-	fs::path relativePath = file;
-	fs::path absolutePath = fs::absolute(relativePath);
-
-	int hr = 0xf;
-	if (fs::exists(absolutePath))
+	namespace fs = std::filesystem;
+	//fs::path r1 = fs::absolute("..\\..\\..\\Games\\Game0\\Resources\\VertexShader.hlsl");
+	fs::path rp = fs::absolute(file);
+	if (!fs::exists(rp)) 
 	{
-		//get file extension
-		std::wstring extension = absolutePath.extension();
+		RC_ERROR("FAILED TO PROPERLY HANDLE RESORUSE code in file: ", file);
+		return;
+	}
 
-		if (extension == L".hlsl") 
-		{
-			//D3DCompileFromFile(relativePath.c_str(), 0, 0, entry_point, "vs_5_0", 0, 0);
-			hr = 0xf;
-		}
-	}
-	if (hr == 0xf)
+	std::wstring extension = rp.extension();
+	void* shaderCode = nullptr;
+	if(extension == L".hlsl")
 	{
-		RC_ERROR(L"Failed to compile file: ", relativePath.c_str());
-		
+		shaderCode = MS_Compile_HSLS_Shader(file, entry_point);
 	}
+
 
 }

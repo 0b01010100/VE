@@ -5,7 +5,8 @@
 #ifdef _WIN32
 #include <DefualtLibs/MSWindowManager/MSWinUser.h>
 #include <DefualtLibs/MSGraphicsManager/MSDX11User.h>
-#pragma comment(lib,"d3dcompiler.lib")
+#include <DefualtLibs/MSResourceManager/MSResUser.h>
+
 #else
 //For the Window
 #define MS_CreateWindow(name, SizeX, SizeY) 0
@@ -14,6 +15,8 @@
 #define initDX11() 0
 #define DX11_clearScreenColor 0 
 #define DX11_present 0 
+//For the Resource Manager
+#define MS_Compile_HSLS_Shader(file_path) 0
 #endif // _WIN32 
 
 
