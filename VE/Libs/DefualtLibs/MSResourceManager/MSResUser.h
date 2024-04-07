@@ -8,11 +8,14 @@
 void* MS_Compile_HSLS_Shader(const wchar_t* file_path, const char* entry_point);
 
 #include <filesystem>
-#include <sstream>
+#include <iostream>
+#include <fstream>
 #include <string>
+#include <sstream>
+
 #define D3D_ERROR(error_type, ...) \
 { \
 	std::wstringstream stream = {}; \
-	stream << L"HSLS compiler error" << L" " <<__VA_ARGS__<< L"\nin " << __FILEW__ << L"\n"; \
+	stream << error_type <<__VA_ARGS__<< L"\ncompiler located in file in " << __FILEW__ << L"\n\n"; \
 	printf("%ls", stream.str().c_str()); \
 }

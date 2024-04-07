@@ -21,7 +21,8 @@ void G0Start()
 	////INIT RESOURCE MANAGER
 	self.rc = new VResourceChief();
 
-	self.rc->LoadResourceFromFileAuto(L"..\\..\\..\\Games\\Game0\\Resources\\VertexShader.hlsl", "vsmain");
+	VertexShader vs =  self.rc->LoadResourceFromFileAuto(L"..\\..\\..\\Games\\Game0\\Resources\\VertexShader.hlsl", "vsmain");
+	FragmentShader fs = self.rc->LoadResourceFromFileAuto(L"..\\..\\..\\Games\\Game0\\Resources\\PixelShader.hlsl", "psmain");
 }
 
 void G0Update()
