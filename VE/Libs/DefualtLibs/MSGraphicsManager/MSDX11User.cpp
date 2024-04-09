@@ -1,5 +1,4 @@
-#include "MSDX11User.h"
-
+#include "MSDX11User.hpp"
 
 static enum D3D_DRIVER_TYPE drivers[] =
 {
@@ -11,8 +10,15 @@ static enum D3D_DRIVER_TYPE drivers[] =
 	D3D_DRIVER_TYPE_REFERENCE
 };
 
-void* initDX11(void* hwnd)
+void* DX11_init(void* hwnd, void* in_ge_b)
 {
+	//FAKING INHERITANCE BY REINTERPRET_CASTING 
+	struct IGraphicsEngine_Base* ge_b = (struct IGraphicsEngine_Base*)in_ge_b;
+	//GIVE THE HIGH LEVEL INTERFACE THE LOW LEVEL FUNCTIONS 
+	ge_b->setFragmentShader = DX11_setFragmentShader;
+	ge_b->setVertexShader = DX11_setVertexShader;
+	ge_b->clearScreenColor = DX11_clearScreenColor;
+	ge_b->present = DX11_present;
 
 	struct DX11Devices* rs = (struct DX11Devices*)malloc(sizeof(struct DX11Devices));
 
@@ -47,7 +53,7 @@ void* initDX11(void* hwnd)
 	return rs;
 }
 
-__declspec(noinline)
+__declspec(noinline) static
 void DX11_createSwapChain(struct DX11Devices* rs, HWND hwnd)
 {
 	DXGI_SWAP_CHAIN_DESC sw_desc = { 0 };
@@ -108,19 +114,40 @@ void DX11_createSwapChain(struct DX11Devices* rs, HWND hwnd)
 	//Release ref to resource when done using it
 	TEX->Release();
 }
-
-__declspec(noinline)
+__declspec(noinline) static
 void DX11_clearScreenColor(void* rs, float r, float g, float b, float a)
 {
 	struct DX11Devices* s = (struct DX11Devices*)rs;
 	float color[4] = { r,g,b,a };
+	//clear the color of the wholl render target to the color reprsented as [r] [g] [b] [a]
 	s->context->ClearRenderTargetView(s->rtv, color);
 }
-
-__declspec(noinline)
+__declspec(noinline) static
 void DX11_present(void* rs) 
 {
 	struct DX11Devices* s = (struct DX11Devices*)rs;
+	//present to make make the render target seeable to human eyes
 	s->sw->Present(1, 0);
 }
-
+__declspec(noinline) static
+void DX11_setVertexShader(void* rs, void* vs) 
+{
+	struct DX11Devices* s = (struct DX11Devices*)rs;
+	struct ID3D10Blob* shaderCode = (struct ID3D10Blob*)vs;
+	struct ID3D11VertexShader* outVertexShader = __nullptr;
+	//use the byte code to create a DX11 vertex shader 
+	s->dev->CreateVertexShader(shaderCode->GetBufferPointer(), shaderCode->GetBufferSize(), 0, &outVertexShader);
+	//Set the Vertex Shader to be used in the input assembly stage of rendering 
+	s->context->VSSetShader(outVertexShader, 0, 0);
+}
+__declspec(noinline) static
+void DX11_setFragmentShader(void* rs, void* fs)
+{
+	struct DX11Devices* s = (struct DX11Devices*)rs;
+	struct ID3D10Blob* shaderCode = (struct ID3D10Blob*)fs;
+	struct ID3D11PixelShader* outPixelShader = __nullptr;
+	//use the byte code to create a DX11 pixel shader 
+	s->dev->CreatePixelShader(shaderCode->GetBufferPointer(), shaderCode->GetBufferSize(), 0, &outPixelShader);
+	//Set the Pixel Shader to be used in the input assembly stage of rendering 
+	s->context->PSSetShader(outPixelShader, 0, 0);
+}

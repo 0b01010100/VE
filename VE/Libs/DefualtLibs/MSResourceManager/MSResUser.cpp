@@ -21,6 +21,7 @@ void* MS_Compile_HSLS_Shader(const wchar_t* file_path, const char* entry_point)
 	//remove the frist and second slash(/) 
 	firstLine.erase(0, 2);
 	//compiler Shader
+
 	HRESULT hr = D3DCompileFromFile(file_path, 0, 0, entry_point, firstLine.c_str(), 0, 0, &shaderCode, &errCode);
 	//check if shader compiled with errors
 	if(errCode)

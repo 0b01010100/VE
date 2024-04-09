@@ -15,14 +15,18 @@ public:
 void G0Start()
 {
 	////INIT WINDOW
-	self.wnd = new VWindow(L"I LOVE C++", 0U, 0U, VE::VAPI::WINDOWS);
+	self.wnd = new VWindow(L"I LOVE C++", 0, 0, VE::VAPI::WINDOWS);
 	////INIT GRAPHICS ENGINE
 	self.ge = new VGraphics(self.wnd);
 	////INIT RESOURCE MANAGER
 	self.rc = new VResourceChief();
-
+	///INIT VERTEX SHADER
 	VertexShader vs =  self.rc->LoadResourceFromFileAuto(L"..\\..\\..\\Games\\Game0\\Resources\\VertexShader.hlsl", "vsmain");
+	///INIT VERTEX SHADER
 	FragmentShader fs = self.rc->LoadResourceFromFileAuto(L"..\\..\\..\\Games\\Game0\\Resources\\PixelShader.hlsl", "psmain");
+
+	self.ge->SetVertexShader(vs);
+	self.ge->SetFragmentShader(fs);
 }
 
 void G0Update()

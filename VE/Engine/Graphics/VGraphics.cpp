@@ -7,9 +7,7 @@ VE::Graphics::VGraphics::VGraphics(class VE::Window::VWindow* wnd)
 	switch (wnd->renderingApi)
 	{
 		case VAPI::WINDOWS:
-			renderSystem = initDX11(wnd->phwnd);
-			clearScreenColor = DX11_clearScreenColor;
-			present = DX11_present;
+			this->renderSystem = DX11_init(wnd->phwnd, this);
 			break;
 
 		case VAPI::OGL:
@@ -30,12 +28,12 @@ VE::Graphics::VGraphics::VGraphics(class VE::Window::VWindow* wnd)
 
 void VE::Graphics::VGraphics::SetFragmentShader(void* fs)
 {
-	this->setFragmentShader(fs);
+	this->setFragmentShader(this->renderSystem, fs);
 }
 
 void VE::Graphics::VGraphics::SetVertexShader(void* vs)
 {
-	this->setVertexShader(vs);
+	this->setVertexShader(this->renderSystem, vs);
 }
 
 void VE::Graphics::VGraphics::ClearScreenColor(float r, float g, float b, float a)
