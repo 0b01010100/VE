@@ -4,10 +4,11 @@ namespace VE
 {
 	namespace Graphics
 	{
+		#include<DefualtLibs/MSGraphicsManager/req.h>
 		/*extends IGraphicsEngine_Base*/
 
 		//A GRAPHICS ENGINE 
-		class VGraphics 
+		class VGraphics
 		{
 		public:
 			//initialize the Graphics Engine
@@ -15,7 +16,7 @@ namespace VE
 			//will a set a Pixel/Fragment shader for the render system to use 
 			void SetFragmentShader(void* fs);
 			//will a set a Vertex shader for the render system to use 
-			void SetVertexShader(void* vs);
+			void SetVertexShader(struct V_VertexShaderInfo* vsInfo);
 			//will clear the color of the texture to a given color
 			void ClearScreenColor(float r, float g, float b, float a);
 			//will present what was draw on the render texture so we can see it 
@@ -26,7 +27,7 @@ namespace VE
 			//will a set a Pixel/Fragment shader for the render system to use 
 			void(*setFragmentShader)(void* rs, void* fs) = nullptr;
 			//will a set a Vertex shader for the render system to use 
-			void(*setVertexShader)(void* rs, void* vs) = nullptr;
+			void(*setVertexShader)(void* rs, struct V_VertexShaderInfo* vsInfo) = nullptr;
 			//will clear the color of the texture to a given color
 			void(*clearScreenColor)(void* rs, float r, float g, float b, float a) = nullptr;
 			//will present what was draw on the render texture so we can see it 

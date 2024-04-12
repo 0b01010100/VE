@@ -3,7 +3,7 @@
 void * MS_CreateWindow(const wchar_t * name, long SizeX, long SizeY)
 {
     //describe the window
-    WNDCLASSW wc = {};
+    WNDCLASSW wc = { 0 };
     //class name
     wc.lpszClassName = name;
     //event handler

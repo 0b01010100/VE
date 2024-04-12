@@ -2,7 +2,6 @@
 //#define UNICODE
 #include <Windows.h>
 #include <sstream>
-#define USING_MSWINDOW_MANAGER
 
 //creates a Microsift specefic window
 void* MS_CreateWindow(const wchar_t* name, long SizeX, long SizeY);

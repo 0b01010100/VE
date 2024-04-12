@@ -1,6 +1,12 @@
 //ps_5_0
 
-float4 psmain(float4 position : SV_Position) : SV_Target
+struct VS_OUTPUT
 {
-	return float4(1, 1, 1, 1);
+    float4 position : SV_POSITION;
+    float3 color : COLOR;
+};
+float4 psmain(VS_OUTPUT input) : SV_Target
+{
+    return float4(1,1,1,1);
+
 }

@@ -25,7 +25,30 @@ void G0Start()
 	///INIT VERTEX SHADER
 	FragmentShader fs = self.rc->LoadResourceFromFileAuto(L"..\\..\\..\\Games\\Game0\\Resources\\PixelShader.hlsl", "psmain");
 
-	self.ge->SetVertexShader(vs);
+	float tri[9]{
+		1, -1, 0, // position 1
+		1, 1, 0,// position 2
+		1, -1, 0,// position 3
+	};
+
+	VertexMesh vtm = tri;
+
+	V_VertexShaderInfo vsI = {};
+	vsI.inputLayoutsElementCount = 2;
+	V_INPUT_LAYOUT_FORMAT formats[2] =
+	{
+		//for position
+		V_INPUT_LAYOUT_FORMAT::V_INPUT_LAYOUT_FORMAT_R32G32B32_FLOAT,
+		//for color
+		V_INPUT_LAYOUT_FORMAT::V_INPUT_LAYOUT_FORMAT_R32G32B32_FLOAT
+	};
+	vsI.inputLayouts = formats;
+	vsI.inputLayoutElementNames = new const char* [2] {
+		"POSITION","COLOR"
+	};
+	vsI.vsCode = vs;
+	vsI.vtm = vtm;
+	self.ge->SetVertexShader(&vsI);
 	self.ge->SetFragmentShader(fs);
 }
 

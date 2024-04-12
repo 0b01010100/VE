@@ -1,6 +1,8 @@
 #include "MSResUser.h"
 
 
+
+
 void* MS_Compile_HSLS_Shader(const wchar_t* file_path, const char* entry_point)
 {
 	ID3DBlob* shaderCode = nullptr;
