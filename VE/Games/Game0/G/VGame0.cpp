@@ -15,7 +15,7 @@ public:
 void G0Start()
 {
 	////INIT WINDOW
-	self.wnd = new VWindow(L"I LOVE C++", 0, 0, VE::VAPI::WINDOWS);
+	self.wnd = new VWindow(L"I LOVE C++",300, 300, VE::VAPI::WINDOWS);
 	////INIT GRAPHICS ENGINE
 	self.ge = new VGraphics(self.wnd);
 	////INIT RESOURCE MANAGER
@@ -25,29 +25,39 @@ void G0Start()
 	///INIT VERTEX SHADER
 	FragmentShader fs = self.rc->LoadResourceFromFileAuto(L"..\\..\\..\\Games\\Game0\\Resources\\PixelShader.hlsl", "psmain");
 
-	float tri[9]{
-		1, -1, 0, // position 1
-		1, 1, 0,// position 2
-		1, -1, 0,// position 3
+	struct vec3 
+	{
+		float x, y, z;
 	};
 
-	VertexMesh vtm = tri;
+	struct Vertex
+	{
+		vec3 v[3];
+	}; 
+
+	Vertex t[3] =
+	{
+		{-1, -1, 0},
+		{0.5, 1, 0},
+		{1, -1, 0}
+	};
 
 	V_VertexShaderInfo vsI = {};
-	vsI.inputLayoutsElementCount = 2;
-	V_INPUT_LAYOUT_FORMAT formats[2] =
+	vsI.inputLayoutsElementCount = 1;
+	V_INPUT_LAYOUT_FORMAT formats[1] =
 	{
 		//for position
 		V_INPUT_LAYOUT_FORMAT::V_INPUT_LAYOUT_FORMAT_R32G32B32_FLOAT,
-		//for color
-		V_INPUT_LAYOUT_FORMAT::V_INPUT_LAYOUT_FORMAT_R32G32B32_FLOAT
 	};
 	vsI.inputLayouts = formats;
-	vsI.inputLayoutElementNames = new const char* [2] {
-		"POSITION","COLOR"
+	vsI.inputLayoutElementNames = new const char* [1] {
+		"POSITION"
 	};
 	vsI.vsCode = vs;
-	vsI.vtm = vtm;
+	vsI.vtm = t;
+	vsI.len_list = 3;
+	vsI.size_vertex = sizeof(Vertex);
+
 	self.ge->SetVertexShader(&vsI);
 	self.ge->SetFragmentShader(fs);
 }
@@ -55,6 +65,6 @@ void G0Start()
 void G0Update()
 {
 	self.wnd->Update();
-	self.ge->ClearScreenColor(1, 0, 0, 1);
+	self.ge->ClearScreenColor(0, 0, 0, 0);
 	self.ge->Present();
 }

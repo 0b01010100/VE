@@ -36,6 +36,10 @@ struct V_VertexShaderInfo
 	void* vsCode;
 	//Vertex Mesh
 	void* vtm;
+	//vertex data size
+	unsigned int size_vertex;
+	//vertex count
+	unsigned int len_list;
 	//input layout
 	enum class V_INPUT_LAYOUT_FORMAT* inputLayouts;
 	//number of user defined samatics

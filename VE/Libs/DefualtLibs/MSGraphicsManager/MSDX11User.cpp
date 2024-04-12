@@ -171,9 +171,16 @@ void DX11_clearScreenColor(void* rs, float r, float g, float b, float a)
 __declspec(noinline) static
 void DX11_present(void* rs) 
 {
+
 	struct DX11Devices* s = reinterpret_cast<struct DX11Devices*>(rs);
-	//
+	D3D11_VIEWPORT vp = { 0 };
+	vp.Width = 300;
+	vp.Height = 300;
+	vp.MinDepth = 0b0;
+	vp.MaxDepth = 0b1;
+	s->context->RSSetViewports(1, &vp);
 	s->context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+	s->context->Draw(3, 0);
 	//present to make make the render target seeable to human eyes
 	s->sw->Present(1U, 0U);
 }
@@ -181,6 +188,8 @@ __declspec(noinline) static
 void DX11_setVertexShader(void* rs, struct V_VertexShaderInfo* vsInfo)
 {
 	struct DX11Devices* s = reinterpret_cast<struct DX11Devices*>(rs);
+
+	//CREATE VERTEX SHADER
 	struct ID3D10Blob* shaderCode = reinterpret_cast<ID3D10Blob*>(vsInfo->vsCode);
 	NULL_ERROR(shaderCode, "Failed to set succesfully vertex shader for use. Your vertex Shader was null. Check your V_VertexShaderInfo struct", return);
 	struct ID3D11VertexShader* outVertexShader = __nullptr;
@@ -190,9 +199,29 @@ void DX11_setVertexShader(void* rs, struct V_VertexShaderInfo* vsInfo)
 	//Set the Vertex Shader to be used in the input assembly stage of rendering 
 	s->context->VSSetShader(outVertexShader, __nullptr, 0U);
 
-	//TODO-
-		//create Vertex Buffer
-
+	//CREATE VERTEX BUFFER
+	D3D11_BUFFER_DESC desc = { 0 };
+	//Size of the data 
+	desc.ByteWidth = vsInfo->size_vertex * vsInfo->len_list;
+	//the resource will be read and wirten to by the GPU
+	desc.Usage = D3D11_USAGE_DEFAULT;
+	//Bind to Input l Assembly as a Vertex buffer
+	desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	//0 for no CPU access is necessary
+	desc.CPUAccessFlags = 0;
+	D3D11_SUBRESOURCE_DATA srd = 
+	{
+		vsInfo->vtm,
+		0U,
+		0U
+	};
+	ID3D11Buffer* vertexBuffer = __nullptr;
+	DX11_ERROR(s->dev->CreateBuffer(&desc, &srd, &vertexBuffer), "Failed to set succesfully vertex shader for use. Check your V_VertexShaderInfo struct's Vertex Mesh data", return);
+	unsigned int stride = 0;
+	unsigned int offset = 0b0U;
+	s->context->IASetVertexBuffers(0U, 1U, &vertexBuffer, &stride, &offset);
+	
+	//SET UP INPUT LAYOUT 
 	//DXGI_FORMAT_R32G32B32A32_FLOAT = 2U 
 	//DXGI_FORMAT_R32G32B32_FLOAT = 6U 
 	//DXGI_FORMAT_R32G32_FLOAT = 16U 		
@@ -240,7 +269,6 @@ void DX11_setVertexShader(void* rs, struct V_VertexShaderInfo* vsInfo)
 		free(desc);
 		if (input_layout) {
 			s->context->IASetInputLayout(input_layout);
-			input_layout->Release();
 		}
 	}
 }
