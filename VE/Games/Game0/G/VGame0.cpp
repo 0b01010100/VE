@@ -4,12 +4,14 @@
 using namespace VE::Window;
 using namespace VE::Graphics;
 using namespace VE::Resources;
+using namespace VE::Input;
 class GameData0
 {
 public:
 	VWindow* wnd = nullptr;
 	VGraphics* ge = nullptr;
 	VResourceChief* rc = nullptr;
+	VE::Input::VInput* ipt = nullptr;
 }self = {};
 
 void G0Start()
@@ -20,6 +22,8 @@ void G0Start()
 	self.ge = new VGraphics(self.wnd);
 	////INIT RESOURCE MANAGER
 	self.rc = new VResourceChief();
+	////INIT RESOURCE MANAGER
+	self.ipt = new VInput();
 	///INIT VERTEX SHADER
 	VertexShader vs =  self.rc->LoadResourceFromFileAuto(L"..\\..\\..\\Games\\Game0\\Resources\\VertexShader.hlsl", "vsmain");
 	///INIT VERTEX SHADER
@@ -64,6 +68,14 @@ void G0Start()
 
 void G0Update()
 {
+	if (self.ipt->isKey(VKeyCode::_A, VKeyState::Up))
+	{
+		printf("A");
+	}
+	if (self.ipt->isKey(VKeyCode::_D, VKeyState::Down))
+	{
+		printf("D");
+	}
 	self.wnd->Update();
 	self.ge->ClearScreenColor(0, 0, 0, 0);
 	self.ge->Present();

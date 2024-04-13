@@ -12,6 +12,7 @@ add_library(
     "Engine/Window/VWindow.cpp"
     "Engine/Graphics/VGraphics.cpp"
     "Engine/ResourceChief/VResourceChief.cpp"
+    "Engine/VInput/VInput.cpp"
 )
 add_library(Games STATIC
     "Games/Game0/G/VGame0.cpp"

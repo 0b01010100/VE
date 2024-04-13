@@ -1,4 +1,4 @@
-enum class V_INPUT_LAYOUT_FORMAT : unsigned int
+enum V_INPUT_LAYOUT_FORMAT : unsigned int
 {
 	//Represents a vector format with four 32-bit floating-point components.
 	V_INPUT_LAYOUT_FORMAT_R32G32B32A32_FLOAT = 2,
@@ -22,11 +22,11 @@ enum class V_INPUT_LAYOUT_FORMAT : unsigned int
 	V_INPUT_LAYOUT_FORMAT_R32G32_SINT = 18
 };
 
-static bool operator>=(enum class V_INPUT_LAYOUT_FORMAT ls, unsigned int rs)
+static bool operator>=(enum V_INPUT_LAYOUT_FORMAT ls, unsigned int rs)
 {
 	return (static_cast<unsigned int>(ls) >= rs);
 }
-static bool operator<=(enum class V_INPUT_LAYOUT_FORMAT ls, unsigned int rs)
+static bool operator<=(enum V_INPUT_LAYOUT_FORMAT ls, unsigned int rs)
 {
 	return (static_cast<unsigned int>(ls) <= rs);
 }
@@ -41,7 +41,7 @@ struct V_VertexShaderInfo
 	//vertex count
 	unsigned int len_list;
 	//input layout
-	enum class V_INPUT_LAYOUT_FORMAT* inputLayouts;
+	enum V_INPUT_LAYOUT_FORMAT* inputLayouts;
 	//number of user defined samatics
 	unsigned int inputLayoutsElementCount;
 	//Name of user defined samatics
