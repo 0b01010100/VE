@@ -6,6 +6,7 @@
 //creates a Microsift specefic window
 void* MS_CreateWindow(const wchar_t* name, long SizeX, long SizeY);
 //update window
+
 __declspec(noinline) void MS_UpdateWindow(void * hwnd);
 //Debugging only for MS window creation tool
 #define MS_ERROR(error_type, ...) \

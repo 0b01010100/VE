@@ -1,6 +1,4 @@
 #include "VGraphics.hpp"
-#include "VGraphics.hpp"
-#include <preprocessing.h>
 #include<stdio.h>
 VE::Graphics::VGraphics::VGraphics(class VE::Window::VWindow* wnd)
 {
@@ -8,14 +6,14 @@ VE::Graphics::VGraphics::VGraphics(class VE::Window::VWindow* wnd)
 	switch (wnd->renderingApi)
 	{
 #ifdef _WIN32
-		case VAPI::WINDOWS:
+	case VE::Window::VAPI::WINDOWS:
 			this->renderSystem = DX11_init(wnd->phwnd, this);
 			break;
 #endif
-		case VAPI::OGL:
+		case  VE::Window::VAPI::OGL:
 			break;
 
-		case VAPI::VULKAN:
+		case  VE::Window::VAPI::VULKAN:
 			break;
 
 		default:

@@ -45,7 +45,7 @@ static enum D3D_DRIVER_TYPE drivers[] =
 	D3D_DRIVER_TYPE_REFERENCE
 };
 
-static struct IGraphicsEngine
+struct IGraphicsEngine
 {
 	//will a set a Pixel/Fragment shader for the render system to use 
 	void(*setFragmentShader);
@@ -262,7 +262,7 @@ void DX11_setVertexShader(void* rs, struct V_VertexShaderInfo* vsInfo)
 		//create DX11 InputLayout using non Api specific input Layout
 		ID3D11InputLayout* input_layout = __nullptr;
 		DX11_ERROR(s->dev->CreateInputLayout(desc, vsInfo->inputLayoutsElementCount, shaderCode->GetBufferPointer(), shaderCode->GetBufferSize(), &input_layout), "Failed to fully set vertex shader for use. Check your V_VertexShaderInfo struct's input layout and or your vertex shader code", return);
-		NULL_ERROR(outVertexShader, "Failed to fully set vertex shader for use. Check your V_VertexShaderInfo struct's input layout and or your vertex shader code");
+		NULL_ERROR(outVertexShader, "Failed to fully set vertex shader for use. Check your V_VertexShaderInfo struct's input layout and or your vertex shader code", return);
 
 
 		//release allocated memory

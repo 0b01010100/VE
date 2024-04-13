@@ -1,4 +1,8 @@
 #include <Game0/G/VGame0.h>
+#include <VWindow/VWindow.hpp>
+#include <VGraphics/VGraphics.hpp>
+#include <VResourceChief/VResourceChief.hpp>
+#include <VInput/VInput.h>
 
 
 using namespace VE::Window;
@@ -11,22 +15,22 @@ public:
 	VWindow* wnd = nullptr;
 	VGraphics* ge = nullptr;
 	VResourceChief* rc = nullptr;
-	VE::Input::VInput* ipt = nullptr;
+	VInput* ipt = nullptr;
 }self = {};
 
 void G0Start()
 {
 	////INIT WINDOW
-	self.wnd = new VWindow(L"I LOVE C++",0, 0, VE::VAPI::WINDOWS);
-	////INIT GRAPHICS ENGINE
+	self.wnd = new VWindow(L"I LOVE C++",0, 0, VAPI::WINDOWS);
+	//////INIT GRAPHICS ENGINE
 	self.ge = new VGraphics(self.wnd);
-	////INIT RESOURCE MANAGER
+	//////INIT RESOURCE MANAGER
 	self.rc = new VResourceChief();
-	////INIT RESOURCE MANAGER
+	//////INIT RESOURCE MANAGER
 	self.ipt = new VInput();
-	///INIT VERTEX SHADER
+	/////INIT VERTEX SHADER
 	VertexShader vs =  self.rc->LoadResourceFromFileAuto(L"..\\..\\..\\Games\\Game0\\Resources\\VertexShader.hlsl", "vsmain");
-	///INIT VERTEX SHADER
+	/////INIT VERTEX SHADER
 	FragmentShader fs = self.rc->LoadResourceFromFileAuto(L"..\\..\\..\\Games\\Game0\\Resources\\PixelShader.hlsl", "psmain");
 
 	struct vec3 
@@ -41,21 +45,22 @@ void G0Start()
 
 	Vertex t[3] =
 	{
-		{-1, -1, 0},
-		{0, 1, 0},
-		{1, -1, 0}
+		{-1, -1, 0, 1,1,1},
+		{0, 1, 0, 1,1,1},
+		{1, -1, 0, 1,1,1}
 	};
 
 	V_VertexShaderInfo vsI = {};
-	vsI.inputLayoutsElementCount = 1;
-	V_INPUT_LAYOUT_FORMAT formats[1] =
+	vsI.inputLayoutsElementCount = 2;
+	V_INPUT_LAYOUT_FORMAT formats[2] =
 	{
 		//for position
 		V_INPUT_LAYOUT_FORMAT::V_INPUT_LAYOUT_FORMAT_R32G32B32_FLOAT,
+		V_INPUT_LAYOUT_FORMAT::V_INPUT_LAYOUT_FORMAT_R32G32B32_FLOAT,
 	};
 	vsI.inputLayouts = formats;
-	vsI.inputLayoutElementNames = new const char* [1] {
-		"POSITION"
+	vsI.inputLayoutElementNames = new const char* [2] {
+		"POSITION", "COLOR"
 	};
 	vsI.vsCode = vs;
 	vsI.vtm = t;

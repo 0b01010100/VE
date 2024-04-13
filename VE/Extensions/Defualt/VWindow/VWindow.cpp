@@ -1,5 +1,5 @@
 #include "VWindow.hpp"
-#include <preprocessing.h>
+#include <MSWindowManager/MSWinUser.h>
 #include <stdio.h>
 //a window that wiill encapsulate the complexity of window managment
 VE::Window::VWindow::VWindow(const wchar_t* Name, long SizeX, long SizeY, VAPI Api)

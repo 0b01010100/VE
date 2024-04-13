@@ -1,7 +1,8 @@
 #if _WIN32 
 #include <Windows.h>
-#include<map>
+
 #endif
+#include<map>
 namespace VE 
 {
 	namespace Input

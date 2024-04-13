@@ -1,10 +1,11 @@
 #pragma once
-#include <Window/VWindow.hpp>
+#include <VWindow/VWindow.hpp>
+#include <VGraphics/MSGraphicsManager/MSDX11User.hpp>
 namespace VE
 {
 	namespace Graphics
 	{
-		#include<DefualtLibs/MSGraphicsManager/req.h>
+		
 		/*extends IGraphicsEngine_Base*/
 
 		//A GRAPHICS ENGINE 

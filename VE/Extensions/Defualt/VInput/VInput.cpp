@@ -1,9 +1,9 @@
-#include "VInput.h"
+#include <VInput/VInput.h>
 
 bool VE::Input::VInput::isKey(VKeyCode key, VKeyState state)
 {
 	//add the list of key to check for 
-	mkeys.emplace(std::make_pair(key, VKeyState::Null));
+	mkeys.emplace(key, VKeyState::Null);
 #if defined (WIN32) || defined (_WIN32) || defined (__WIN32)
 	//check if key is down 
 	if (GetAsyncKeyState((int)key))

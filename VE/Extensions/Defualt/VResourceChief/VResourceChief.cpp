@@ -1,5 +1,5 @@
-#include <ResourceChief/VResourceChief.hpp>
-#include <preprocessing.h>
+#include "VResourceChief/MSResourceManager/MSResUser.h"
+#include "VResourceChief/VResourceChief.hpp"
 
 VE::Resources::VResourceChief::VResourceChief()
 {
