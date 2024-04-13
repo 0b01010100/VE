@@ -15,7 +15,7 @@ public:
 void G0Start()
 {
 	////INIT WINDOW
-	self.wnd = new VWindow(L"I LOVE C++",300, 300, VE::VAPI::WINDOWS);
+	self.wnd = new VWindow(L"I LOVE C++",0, 0, VE::VAPI::WINDOWS);
 	////INIT GRAPHICS ENGINE
 	self.ge = new VGraphics(self.wnd);
 	////INIT RESOURCE MANAGER
@@ -38,7 +38,7 @@ void G0Start()
 	Vertex t[3] =
 	{
 		{-1, -1, 0},
-		{0.5, 1, 0},
+		{0, 1, 0},
 		{1, -1, 0}
 	};
 
