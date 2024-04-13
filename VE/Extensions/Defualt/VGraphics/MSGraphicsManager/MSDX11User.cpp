@@ -272,6 +272,29 @@ void DX11_setVertexShader(void* rs, struct V_VertexShaderInfo* vsInfo)
 			input_layout->Release();
 		}
 	}
+	
+	//CREATE CONSTANT BUFFER
+	if (vsInfo->cbSize != 0U)
+	{
+		D3D11_BUFFER_DESC desc = { 0 };
+		//Size of the data 
+		desc.ByteWidth = vsInfo->cbSize;
+		//the resource will be read and wirten to by the GPU
+		desc.Usage = D3D11_USAGE_DEFAULT;
+		//Bind to Input l Assembly as a Vertex buffer
+		desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		//0 for no CPU access is necessary
+		desc.CPUAccessFlags = 0;
+		D3D11_SUBRESOURCE_DATA srd =
+		{
+			vsInfo->cb,
+			0U,
+			0U
+		};
+		ID3D11Buffer* constantBuffer = __nullptr;
+		DX11_ERROR(s->dev->CreateBuffer(&desc, &srd, &constantBuffer), "Failed to set succesfully constant buffer for vertex shader. Check your V_VertexShaderInfo struct's cb and csSize data", return);
+		s->context->VSSetConstantBuffers(0U, 1U, &constantBuffer);
+	}
 }
 __declspec(noinline) static
 void DX11_setFragmentShader(void* rs, void* fs)

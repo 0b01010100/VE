@@ -40,6 +40,10 @@ struct V_VertexShaderInfo
 	unsigned int size_vertex;
 	//vertex count
 	unsigned int len_list;
+	//vertex shader Uniform or Constant Buffer
+	void* cb;
+	//size of vertex shader Uniform or Constant Buffer
+	unsigned cbSize;
 	//input layout
 	enum V_INPUT_LAYOUT_FORMAT* inputLayouts;
 	//number of user defined samatics

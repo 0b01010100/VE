@@ -17,7 +17,13 @@ public:
 	VResourceChief* rc = nullptr;
 	VInput* ipt = nullptr;
 }self = {};
-
+__declspec(align(16))
+struct constant
+{
+	float x = 0.2;
+	float y = 0.2;
+	float z = 0.2;
+}cc;
 void G0Start()
 {
 	////INIT WINDOW
@@ -28,12 +34,18 @@ void G0Start()
 	self.rc = new VResourceChief();
 	//////INIT RESOURCE MANAGER
 	self.ipt = new VInput();
+
+}
+
+void G0Update()
+{
+
 	/////INIT VERTEX SHADER
-	VertexShader vs =  self.rc->LoadResourceFromFileAuto(L"..\\..\\..\\Games\\Game0\\Resources\\VertexShader.hlsl", "vsmain");
+	VertexShader vs = self.rc->LoadResourceFromFileAuto(L"..\\..\\..\\Games\\Game0\\Resources\\VertexShader.hlsl", "vsmain");
 	/////INIT VERTEX SHADER
 	FragmentShader fs = self.rc->LoadResourceFromFileAuto(L"..\\..\\..\\Games\\Game0\\Resources\\PixelShader.hlsl", "psmain");
 
-	struct vec3 
+	struct vec3
 	{
 		float x, y, z;
 	};
@@ -41,7 +53,7 @@ void G0Start()
 	struct Vertex
 	{
 		vec3 v[3];
-	}; 
+	};
 
 	Vertex t[3] =
 	{
@@ -56,30 +68,39 @@ void G0Start()
 	{
 		//for position
 		V_INPUT_LAYOUT_FORMAT::V_INPUT_LAYOUT_FORMAT_R32G32B32_FLOAT,
+		//for color
 		V_INPUT_LAYOUT_FORMAT::V_INPUT_LAYOUT_FORMAT_R32G32B32_FLOAT,
 	};
 	vsI.inputLayouts = formats;
 	vsI.inputLayoutElementNames = new const char* [2] {
 		"POSITION", "COLOR"
-	};
+		};
 	vsI.vsCode = vs;
 	vsI.vtm = t;
 	vsI.len_list = 3;
 	vsI.size_vertex = sizeof(Vertex);
 
+	vsI.cb = &cc;
+	vsI.cbSize = sizeof(constant);
+
 	self.ge->SetVertexShader(&vsI);
 	self.ge->SetFragmentShader(fs);
-}
-
-void G0Update()
-{
-	if (self.ipt->isKey(VKeyCode::_A, VKeyState::Up))
+	//get input 
+	if (self.ipt->isKey(VKeyCode::_A, VKeyState::Down))
 	{
-		printf("A");
+		cc.x -= 0.1;
 	}
 	if (self.ipt->isKey(VKeyCode::_D, VKeyState::Down))
 	{
-		printf("D");
+		cc.x += 0.1;
+	}
+	if (self.ipt->isKey(VKeyCode::_W, VKeyState::Down))
+	{
+		cc.y += 0.1;
+	}
+	if (self.ipt->isKey(VKeyCode::_S, VKeyState::Down))
+	{
+		cc.y -= 0.1;
 	}
 	self.wnd->Update();
 	self.ge->ClearScreenColor(0, 0, 0, 0);

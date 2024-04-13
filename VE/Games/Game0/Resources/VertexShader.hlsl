@@ -1,5 +1,9 @@
 //vs_5_0
 
+cbuffer constant : register(b0)
+{
+    float3 d;
+}
 struct VS_INPUT
 {
     float4 position : POSITION;
@@ -17,6 +21,7 @@ VS_OUTPUT vsmain(VS_INPUT input)
     VS_OUTPUT output = (VS_OUTPUT)0;
 	
     output.position = input.position;
+    output.position += float4(d, 1);
     output.color = input.color;
     return output;
 }
