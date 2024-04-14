@@ -11,7 +11,7 @@ namespace VE
 			VGraphicsResourceChief();
 			VE::Graphics::Resources::VMesh* createMesh
 			(
-				void* points, unsigned int vertexSize, unsigned int pointCount, void* indices, unsigned int indiceCount, void* cb, unsigned int cbSize
+				void* verties, unsigned int vertexSize, unsigned int vertexCount, void* indices, unsigned int indiceCount, void* cb, unsigned int cbSize
 			);
 		};
 	};

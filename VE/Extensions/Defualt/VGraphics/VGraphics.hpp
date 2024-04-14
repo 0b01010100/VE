@@ -15,6 +15,7 @@ namespace VE
 		public:
 			//initialize the Graphics Engine
 			VGraphics(class VE::Window::VWindow* wnd);
+			~VGraphics();
 			//will a set a Pixel/Fragment shader for the render system to use 
 			void SetFragmentShader(void* fs);
 			//will a set a Vertex shader for the render system to use 
@@ -45,7 +46,7 @@ namespace VE
 			//pointer the the render system
 			void* renderSystem = nullptr;
 			//these pointer functions will help us interract with rendering APIs 
-
+		public:
 			VGraphicsResourceChief* resourceManager = nullptr;
 		};
 

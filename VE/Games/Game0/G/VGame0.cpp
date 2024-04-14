@@ -1,5 +1,5 @@
 #include "VGame0.h"
-#include "VGame0.h"
+
 __declspec(align(16))
 struct constant
 {
@@ -37,16 +37,16 @@ void Game0::Start()
 	//////INIT RESOURCE MANAGER
 	ipt = new VInput();
 
-	tri.vertexCount = 3;
-	tri.vertexSize = sizeof(Vertex);
-	tri.verties = &t;
-	tri.cb = &cc;
-	tri.cbSize = sizeof(cc);
+	//tri.vertexCount = 3;
+	//tri.vertexSize = sizeof(Vertex);
+	//tri.verties = &t;
+	//tri.cb = &cc;
+	//tri.cbSize = sizeof(cc);
+	this->tri = ge->resourceManager->createMesh(&t, sizeof(Vertex), 3U, 0, 0, &cc, sizeof(cc));
 }
 
 void Game0::Update()
 {
-
 
 	///INIT VERTEX SHADER
 	//VertexShader vs = self.rc->LoadResourceFromFileAuto(L"..\\..\\..\\Games\\Game0\\Resources\\VertexShader.hlsl", "vsmain");
@@ -75,7 +75,7 @@ void Game0::Update()
 	ge->ClearScreenColor(0, 1, 0, 0);
 
 
-	ge->SetMesh(&tri);
+	ge->SetMesh(tri);
 
 
 	ge->Present();

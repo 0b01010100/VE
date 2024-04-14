@@ -14,11 +14,10 @@ class Game0
 public:
 	void Start();
 	void Update();
-
 	VWindow* wnd = nullptr;
 	VGraphics* ge = nullptr;
 	VResourceChief* rc = nullptr;
 	VInput* ipt = nullptr;
 
-	Resources::VMesh tri = { 0, 0, 0, 0,0 ,0,0 };
+	Resources::VMesh* tri = nullptr;
 };

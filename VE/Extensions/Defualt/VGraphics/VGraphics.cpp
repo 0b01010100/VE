@@ -1,7 +1,9 @@
 #include "VGraphics.hpp"
 #include<stdio.h>
+
 VE::Graphics::VGraphics::VGraphics(class VE::Window::VWindow* wnd)
 {
+	resourceManager = new VGraphicsResourceChief(); 
 	this->wnds = wnd;
 	switch (wnd->renderingApi)
 	{
@@ -24,14 +26,16 @@ VE::Graphics::VGraphics::VGraphics(class VE::Window::VWindow* wnd)
 	{
 		printf("VGraphics creation didn't go so well in File: %ls", __FILEW__);
 	}
-	//resourceManager = new VGraphicsResourceChief();
-}
 
+}
+VE::Graphics::VGraphics::~VGraphics()
+{
+	DX11_uninit(this->renderSystem, this);
+}
 void VE::Graphics::VGraphics::SetFragmentShader(void* fs)
 {
 	this->setFragmentShader(this->renderSystem, fs);
 }
-
 void VE::Graphics::VGraphics::SetVertexShader(void* vs)
 {
 	this->setVertexShader(this->renderSystem, vs);
@@ -44,7 +48,6 @@ void VE::Graphics::VGraphics::ClearScreenColor(float r, float g, float b, float 
 {
 	this->clearScreenColor(this->renderSystem, r, g, b, a);
 }
-
 void VE::Graphics::VGraphics::Present()
 {
 	this->present(this->renderSystem);

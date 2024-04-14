@@ -1,17 +1,20 @@
 #pragma once
 #include "req.h"
-
+// filesystem standard header by MICROSOFT
 #include <filesystem>
+// filesystem standard header by MICROSOFT
 #include <iostream>
+// fstream standard header by MICROSOFT
 #include <fstream>
+// string standard header by MICROSOFT
 #include <string>
+// sstream standard header by MICROSOFT
 #include <sstream>
-
+//allows us to be able to the the d3dcompiler library my MICROSOFT
 #include <d3dcompiler.h>
-//allows us to be able to the the d3dcompiler library 
 #pragma comment(lib, "d3dcompiler.lib")
-#include <d3d11.h>
 //allows us to be able to the the d3d11 library 
+#include <d3d11.h>
 #pragma comment(lib, "d3d11.lib")
 struct DX11Devices
 {
@@ -37,18 +40,26 @@ struct DX11Devices
 void* DX11_init(void* hwnd, void* graphics);
 //////////////////////////////////////////////////RESOURCE MANAGER
 
-
-__declspec(noinline) static void* DX11_createVertexShader(void* rs, const wchar_t* file_path, const char* entry_point, VE::Graphics::Resources::VInputLayout* inputLayout);
-__declspec(noinline) static void* DX11_createFragmentShader(void* rs, const wchar_t* file_path, const char* entry_point);
-
 // //creates a DX11 swap chain
 //@param date -> a pointer to DX11Devices struct, which will represent the DX11 rendering devices and swapChain
 //@param hwnd -> a pointer to HWND__ struct, which is an id for a window
 //We need this id in order to to tell DX11 what window should have the swapchain Buffers
 __declspec(noinline) static void DX11_createSwapChain(struct DX11Devices* rs, HWND hwnd);
 
-//////////////////////////////////////////////////DEVICE CONTEXT
+//create a Vertex Shader the DX11 way
+//@param rs -> a pointer to DX11Devices struct, which will represent the DX11 rendering devices and swapChain
+//@param file_path -> location in the project to acces the Vertex in a file
+//@param entry_point -> the name of the shader programs;s entry point 
+__declspec(noinline) static void* DX11_createVertexShader(void* rs, const wchar_t* file_path, const char* entry_point, VE::Graphics::Resources::VInputLayout* inputLayout);
 
+//create a Pixel Shader the DX11 way
+//@param rs -> a pointer to DX11Devices struct, which will represent the DX11 rendering devices and swapChain
+//@param file_path -> location in the project to acces the FragmentShader in a file
+//@param entry_point -> the name of the shader programs;s entry point 
+__declspec(noinline) static void* DX11_createFragmentShader(void* rs, const wchar_t* file_path, const char* entry_point);
+
+
+//////////////////////////////////////////////////DEVICE CONTEXT
 
 
 //clears the color of the window
@@ -74,9 +85,8 @@ __declspec(noinline) static void DX11_setVertexShader(void* rs, void* vsCode);
 //@param vs -> a generic pointer to Fagment/Pixel Shader btye code and meta data  
 __declspec(noinline) static void DX11_setFragmentShader(void* rs, void* fs);
 
-__declspec(noinline) static
-void DX11_setMesh(void* rs, VE::Graphics::Resources::VMesh* mesh);
 
-#include<string>
-#include <sstream>
+__declspec(noinline) static void DX11_setMesh(void* rs, VE::Graphics::Resources::VMesh* mesh);
+
+void DX11_uninit(void* rs, void* graphics);
 

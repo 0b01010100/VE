@@ -138,7 +138,8 @@ void* DX11_init(void* hwnd, void* graphics)
 	DX11_setFragmentShader(rs, psCode);
 	return rs;
 }
-__declspec(noinline)
+
+__declspec(noinline) static
 void DX11_createSwapChain(struct DX11Devices* rs, HWND hwnd)
 {
 	DXGI_SWAP_CHAIN_DESC sw_desc = { 0 };
@@ -204,7 +205,7 @@ void DX11_createSwapChain(struct DX11Devices* rs, HWND hwnd)
 	//Release ref to resource when done using it
 	TEX->Release();
 }
-__declspec(noinline)
+__declspec(noinline) static
 void* DX11_createVertexShader(void* rs, const wchar_t* file_path, const char* entry_point, VE::Graphics::Resources::VInputLayout* inputLayout)
 {
 	std::filesystem::path absolote_path = std::filesystem::absolute(file_path);
@@ -288,7 +289,7 @@ void* DX11_createVertexShader(void* rs, const wchar_t* file_path, const char* en
 
 	return vertexShaderData;
 }
-__declspec(noinline)
+__declspec(noinline) static
 void* DX11_createFragmentShader(void* rs, const wchar_t* file_path, const char* entry_point)
 {
 	std::filesystem::path absolote_path = std::filesystem::absolute(file_path);
@@ -313,8 +314,6 @@ void* DX11_createFragmentShader(void* rs, const wchar_t* file_path, const char* 
 
 	return outPixelShader;
 }
-
-
 __declspec(noinline) static
 void DX11_clearScreenColor(void* rs, float r, float g, float b, float a)
 {
@@ -334,121 +333,6 @@ void DX11_present(void* rs)
 	//present to make make the render target seeable to human eyes
 	s->sw->Present(1U, 0U);
 }
-//__declspec(noinline) static
-//void DX11_setVertexShader(void* rs, struct V_VertexShaderInfo* vsInfo)
-//{
-//	//struct DX11Devices* s = reinterpret_cast<struct DX11Devices*>(rs);
-//
-//	////CREATE VERTEX SHADER
-//	//struct ID3D10Blob* shaderCode = reinterpret_cast<ID3D10Blob*>(vsInfo->vsCode);
-//	//NULL_ERROR(shaderCode, "Failed to set succesfully vertex shader for use. Your vertex Shader was null. Check your V_VertexShaderInfo struct", return);
-//	//struct ID3D11VertexShader* outVertexShader = __nullptr;
-//	////use the byte code to create a DX11 vertex shader 
-//	//DX11_ERROR(s->dev->CreateVertexShader(shaderCode->GetBufferPointer(), shaderCode->GetBufferSize(), 0L, &outVertexShader), "Failed to set succesfully vertex shader for use. Check your shader code", return);
-//	//NULL_ERROR(outVertexShader, "Failed to set succesfully vertex shader for use. Check your V_VertexShaderInfo struct and or your vertex shader code", return);
-//	////Set the Vertex Shader to be used in the input assembly stage of rendering 
-//	//s->context->VSSetShader(outVertexShader, __nullptr, 0U);
-//	//
-//	////CREATE VERTEX BUFFER
-//	//D3D11_BUFFER_DESC desc = { 0 };
-//	////Size of the data 
-//	//desc.ByteWidth = vsInfo->size_vertex * vsInfo->len_list;
-//	////the resource will be read and wirten to by the GPU
-//	//desc.Usage = D3D11_USAGE_DEFAULT;
-//	////Bind to Input l Assembly as a Vertex buffer
-//	//desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-//	////0 for no CPU access is necessary
-//	//desc.CPUAccessFlags = 0;
-//	//D3D11_SUBRESOURCE_DATA srd = 
-//	//{
-//	//	vsInfo->vtm,
-//	//	0U,
-//	//	0U
-//	//};
-//	//ID3D11Buffer* vertexBuffer = __nullptr;
-//	//DX11_ERROR(s->dev->CreateBuffer(&desc, &srd, &vertexBuffer), "Failed to set succesfully vertex shader for use. Check your V_VertexShaderInfo struct's Vertex Mesh data", return);
-//	//unsigned int stride = vsInfo->size_vertex;
-//	//unsigned int offset = 0b0U;
-//	//s->context->IASetVertexBuffers(0U, 1U, &vertexBuffer, &stride, &offset);
-//
-//	////SET UP INPUT LAYOUT 
-//	////DXGI_FORMAT_R32G32B32A32_FLOAT = 2U 
-//	////DXGI_FORMAT_R32G32B32_FLOAT = 6U 
-//	////DXGI_FORMAT_R32G32_FLOAT = 16U 		
-//	//unsigned int AlignedByteOffset = 0U;
-//	//if (vsInfo->inputLayoutsElementCount != 0U) 
-//	//{
-//	//	struct D3D11_INPUT_ELEMENT_DESC* desc = reinterpret_cast<struct D3D11_INPUT_ELEMENT_DESC*>(malloc(sizeof(struct D3D11_INPUT_ELEMENT_DESC) * vsInfo->inputLayoutsElementCount));
-//	//	//init the memory to zero
-//	//	ZeroMemory(desc, sizeof(struct D3D11_INPUT_ELEMENT_DESC) * vsInfo->inputLayoutsElementCount);
-//
-//	//	for (int i = 0; i < vsInfo->inputLayoutsElementCount;)
-//	//	{
-//	//		if (vsInfo->inputLayouts[i] >= 2U && vsInfo->inputLayouts[i] <= 4U)
-//	//		{
-//	//			desc[i].Format = static_cast<DXGI_FORMAT>(vsInfo->inputLayouts[i]);
-//	//			desc[i].AlignedByteOffset = AlignedByteOffset;
-//	//			//Size of (unsigned int, int, or float) = sizeof(int), amount of them used = 4
-//	//			AlignedByteOffset += static_cast<unsigned int>(sizeof(int) * 4ULL);
-//	//		}
-//	//		else if (vsInfo->inputLayouts[i] >= 6U && vsInfo->inputLayouts[i] <= 8U)
-//	//		{
-//	//			desc[i].Format = static_cast<DXGI_FORMAT>(vsInfo->inputLayouts[i]);
-//	//			desc[i].AlignedByteOffset = AlignedByteOffset;
-//	//			//Size of (unsigned int, int, or float) = sizeof(int), amount of them used = 3
-//	//			AlignedByteOffset += static_cast<unsigned int>(sizeof(int) * 3ULL);
-//	//		}
-//	//		else if (vsInfo->inputLayouts[i] >= 16U && vsInfo->inputLayouts[i] <= 18U)
-//	//		{
-//	//			desc[i].Format = static_cast<DXGI_FORMAT>(vsInfo->inputLayouts[i]);
-//	//			desc[i].AlignedByteOffset = AlignedByteOffset;
-//	//			//Size of (unsigned int, int, or float) = sizeof(int), amount of them used = 2
-//	//			AlignedByteOffset += static_cast<unsigned int>(sizeof(int) * 2ULL);
-//	//		}
-//	//		desc[i].SemanticName = vsInfo->inputLayoutElementNames[i];
-//
-//	//		i++;
-//	//	}
-//	//	//create DX11 InputLayout using non Api specific input Layout
-//	//	ID3D11InputLayout* input_layout = __nullptr;
-//	//	DX11_ERROR(s->dev->CreateInputLayout(desc, vsInfo->inputLayoutsElementCount, shaderCode->GetBufferPointer(), shaderCode->GetBufferSize(), &input_layout), "Failed to fully set vertex shader for use. Check your V_VertexShaderInfo struct's input layout and or your vertex shader code", return);
-//	//	NULL_ERROR(outVertexShader, "Failed to fully set vertex shader for use. Check your V_VertexShaderInfo struct's input layout and or your vertex shader code", return);
-//
-//
-//	//	//release allocated memory
-//	//	free(desc);
-//	//	if (input_layout) {
-//	//		s->context->IASetInputLayout(input_layout);
-//	//		input_layout->Release();
-//	//	}
-//	//}
-//	//
-//	////CREATE CONSTANT BUFFER
-//	//if (vsInfo->cbSize != 0U)
-//	//{
-//	//	D3D11_BUFFER_DESC desc = { 0 };
-//	//	//Size of the data 
-//	//	desc.ByteWidth = vsInfo->cbSize;
-//	//	//the resource will be read and wirten to by the GPU
-//	//	desc.Usage = D3D11_USAGE_DEFAULT;
-//	//	//Bind to Input l Assembly as a Vertex buffer
-//	//	desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-//	//	//0 for no CPU access is necessary
-//	//	desc.CPUAccessFlags = 0;
-//	//	D3D11_SUBRESOURCE_DATA srd =
-//	//	{
-//	//		vsInfo->cb,
-//	//		0U,
-//	//		0U
-//	//	};
-//	//	ID3D11Buffer* constantBuffer = __nullptr;
-//	//	DX11_ERROR(s->dev->CreateBuffer(&desc, &srd, &constantBuffer), "Failed to set succesfully constant buffer for vertex shader. Check your V_VertexShaderInfo struct's cb and csSize data", return);
-//	//	s->context->VSSetConstantBuffers(0U, 1U, &constantBuffer);
-//	//}
-//
-//
-//}
-
 __declspec(noinline) static
 void DX11_setVertexShader(void* rs, void* vsCode)
 {
@@ -524,4 +408,19 @@ void DX11_setMesh(void* rs, VE::Graphics::Resources::VMesh* mesh)
 		DX11_ERROR(s->dev->CreateBuffer(&desc, &srd, &constantBuffer), "Failed to set succesfully constant buffer for vertex shader. Check your V_VertexShaderInfo struct's cb and csSize data", return);
 		s->context->VSSetConstantBuffers(0U, 1U, &constantBuffer);
 	}
+}
+
+void DX11_uninit(void* rs, void* graphics)
+{
+	IGraphicsEngine* ge_b = reinterpret_cast<IGraphicsEngine*>(graphics);
+	struct DX11Devices* s = reinterpret_cast<struct DX11Devices*>(rs);
+	memset(ge_b, 0, sizeof(IGraphicsEngine));
+	if(s->context)s->context->Release();
+	if(s->dev)s->dev->Release();
+	if(s->factory)s->factory->Release();
+	if(s->idxgi_dev)s->idxgi_dev->Release();
+	if (s->rtv)s->rtv->Release();
+	if (s->sw)s->sw->Release();
+	free(s);
+	delete ge_b;
 }
