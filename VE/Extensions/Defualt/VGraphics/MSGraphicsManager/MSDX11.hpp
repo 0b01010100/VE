@@ -1,5 +1,15 @@
 #pragma once
 #include "req.h"
+
+#include <filesystem>
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <sstream>
+
+#include <d3dcompiler.h>
+//allows us to be able to the the d3dcompiler library 
+#pragma comment(lib, "d3dcompiler.lib")
 #include <d3d11.h>
 //allows us to be able to the the d3d11 library 
 #pragma comment(lib, "d3d11.lib")
@@ -25,12 +35,21 @@ struct DX11Devices
 //We need this id in order to to tell DX11 what window should be set up with a rendered system
 
 void* DX11_init(void* hwnd, void* graphics);
+//////////////////////////////////////////////////RESOURCE MANAGER
 
-//creates a DX11 swap chain
+
+__declspec(noinline) static void* DX11_createVertexShader(void* rs, const wchar_t* file_path, const char* entry_point, VE::Graphics::Resources::VInputLayout* inputLayout);
+__declspec(noinline) static void* DX11_createFragmentShader(void* rs, const wchar_t* file_path, const char* entry_point);
+
+// //creates a DX11 swap chain
 //@param date -> a pointer to DX11Devices struct, which will represent the DX11 rendering devices and swapChain
 //@param hwnd -> a pointer to HWND__ struct, which is an id for a window
 //We need this id in order to to tell DX11 what window should have the swapchain Buffers
 __declspec(noinline) static void DX11_createSwapChain(struct DX11Devices* rs, HWND hwnd);
+
+//////////////////////////////////////////////////DEVICE CONTEXT
+
+
 
 //clears the color of the window
 //@param data -> a pointer to DX11Devices
@@ -47,13 +66,16 @@ __declspec(noinline) static void DX11_present(void* rs);
 //allows us to Set the Vertex Shader to be used in the input assembly stage of rendering 
 //@param rs -> a pointer to a DX11Devices which will be represented on a hight level as a render system (or rs)
 //@param vertexShaderAttribs -> a generic pointer to VertexShader data (like inputLayout, VertexShader btye Code, And Samatics)
-__declspec(noinline) static void DX11_setVertexShader(void* rs, struct V_VertexShaderInfo* vsInfo);
+//__declspec(noinline) static void DX11_setVertexShader(void* rs, struct V_VertexShaderInfo* vsInfo);
+__declspec(noinline) static void DX11_setVertexShader(void* rs, void* vsCode);
 
 //allows us to Set the Vertex Shader to be used in the input assembly stage of rendering
 //@param rs -> a pointer to a DX11Devices which will be represented on a hight level as a render system (or rs)
 //@param vs -> a generic pointer to Fagment/Pixel Shader btye code and meta data  
 __declspec(noinline) static void DX11_setFragmentShader(void* rs, void* fs);
 
+__declspec(noinline) static
+void DX11_setMesh(void* rs, VE::Graphics::Resources::VMesh* mesh);
 
 #include<string>
 #include <sstream>

@@ -24,6 +24,7 @@ VE::Graphics::VGraphics::VGraphics(class VE::Window::VWindow* wnd)
 	{
 		printf("VGraphics creation didn't go so well in File: %ls", __FILEW__);
 	}
+	//resourceManager = new VGraphicsResourceChief();
 }
 
 void VE::Graphics::VGraphics::SetFragmentShader(void* fs)
@@ -31,9 +32,13 @@ void VE::Graphics::VGraphics::SetFragmentShader(void* fs)
 	this->setFragmentShader(this->renderSystem, fs);
 }
 
-void VE::Graphics::VGraphics::SetVertexShader(struct V_VertexShaderInfo* vsInfo)
+void VE::Graphics::VGraphics::SetVertexShader(void* vs)
 {
-	this->setVertexShader(this->renderSystem, vsInfo);
+	this->setVertexShader(this->renderSystem, vs);
+}
+void VE::Graphics::VGraphics::SetMesh(VE::Graphics::Resources::VMesh* mesh)
+{
+	this->setMesh(this->renderSystem, mesh);
 }
 void VE::Graphics::VGraphics::ClearScreenColor(float r, float g, float b, float a)
 {

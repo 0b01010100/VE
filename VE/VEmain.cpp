@@ -2,9 +2,10 @@
 
 int main()
 {	
-	G0Start();
+	Game0* game = new Game0();
+	game->Start();
 	while (true) 
 	{
-		G0Update();
+		game->Update();
 	}
 }

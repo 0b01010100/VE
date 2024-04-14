@@ -1,7 +1,24 @@
 #pragma once
+#include <Game0/G/VGame0.h>
+#include <VWindow/VWindow.hpp>
+#include <VGraphics/VGraphics.hpp>
+#include <VResourceChief/VResourceChief.hpp>
+#include <VInput/VInput.h>
 
-class GameData0;
+using namespace VE::Window;
+using namespace VE::Graphics;
+using namespace VE::Resources;
+using namespace VE::Input;
+class Game0
+{
+public:
+	void Start();
+	void Update();
 
-void G0Start();
+	VWindow* wnd = nullptr;
+	VGraphics* ge = nullptr;
+	VResourceChief* rc = nullptr;
+	VInput* ipt = nullptr;
 
-void G0Update();
+	Resources::VMesh tri = { 0, 0, 0, 0,0 ,0,0 };
+};
