@@ -40,7 +40,7 @@ void VE::Graphics::VGraphics::SetVertexShader(void* vs)
 {
 	this->setVertexShader(this->renderSystem, vs);
 }
-void VE::Graphics::VGraphics::SetMesh(VE::Graphics::Resources::VMesh* mesh)
+void VE::Graphics::VGraphics::SetMesh(VE::Graphics::Resources::VMesh mesh)
 {
 	this->setMesh(this->renderSystem, mesh);
 }

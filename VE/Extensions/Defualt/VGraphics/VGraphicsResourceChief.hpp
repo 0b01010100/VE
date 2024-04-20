@@ -9,9 +9,22 @@ namespace VE
 		{
 		public:
 			VGraphicsResourceChief();
-			VE::Graphics::Resources::VMesh* createMesh
+			//will allow you to create a custom mesh 
+			VE::Graphics::Resources::VMesh createMesh
 			(
-				void* verties, unsigned int vertexSize, unsigned int vertexCount, void* indices, unsigned int indiceCount, void* cb, unsigned int cbSize
+				//this should point to an array of verties 
+				void* verties, 
+				//size of each vertex
+				unsigned int vertexSize,
+				//number of verties
+				unsigned int vertexCount, 
+				//Instead of specifying the vertices directly for each triangle, an index buffer is
+				//used to reference vertices from the vertex buffer.
+				std::vector<unsigned int> indices, 
+				//constant buffer
+				void* cb, 
+				//size of the const buffer struct or class 
+				unsigned int cbSize
 			);
 		};
 	};

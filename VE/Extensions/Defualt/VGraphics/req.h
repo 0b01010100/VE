@@ -1,5 +1,5 @@
 #pragma once
-
+#include<vector>
 namespace VE
 {
 	namespace Graphics 
@@ -23,11 +23,11 @@ namespace VE
 				//Represents a vector format with three 32 - bit signed integer components.
 				V_INPUT_LAYOUT_FORMAT_R32G32B32_SINT = 8,
 
-				//Represents a vector format with three 32-bit floating-point components.
+				//Represents a vector format with two 32-bit floating-point components.
 				V_INPUT_LAYOUT_FORMAT_R32G32_FLOAT = 16,
-				//Represents a vector format with three 32-bit unsigned integer components.
+				//Represents a vector format with two 32-bit unsigned integer components.
 				V_INPUT_LAYOUT_FORMAT_R32G32_UINT = 17,
-				//Represents a vector format with three 32 - bit signed integer components.
+				//Represents a vector format with two 32 - bit signed integer components.
 				V_INPUT_LAYOUT_FORMAT_R32G32_SINT = 18
 			};
 
@@ -39,27 +39,7 @@ namespace VE
 			{
 				return (static_cast<unsigned int>(ls) <= rs);
 			}
-			struct V_VertexShaderInfo
-			{
-				//Shader code and Size
-				void* vsCode;
-				//Vertex Mesh
-				void* vtm;
-				//vertex data size
-				unsigned int size_vertex;
-				//vertex count
-				unsigned int len_list;
-				//vertex shader Uniform or Constant Buffer
-				void* cb;
-				//size of vertex shader Uniform or Constant Buffer
-				unsigned cbSize;
-				//input layout
-				enum V_INPUT_LAYOUT_FORMAT* inputLayouts;
-				//number of user defined samatics
-				unsigned int inputLayoutsElementCount;
-				//Name of user defined samatics
-				const char** inputLayoutElementNames;
-			};
+
 
 			struct VInputLayout
 			{
@@ -70,17 +50,27 @@ namespace VE
 				//Name of user defined samatics
 				const char** inputLayoutElementNames;
 			};
-
+	
 			class VMesh
 			{
 			public:
 				VMesh
 				(
+				) 
+				{
+					this->verties = 0;
+					this->vertexSize = 0;
+					this->vertexCount = 0;
+					this->indices;
+					this->cb = 0;
+					this->cbSize = 0;
+				}
+				VMesh
+				(
 					void* verties,
 					unsigned int vertexSize,
 					unsigned int vertexCount,
-					void* indices, 
-					unsigned int indiceCount,
+					std::vector<unsigned int> indices,
 					void* cb,
 					unsigned int cbSize
 				)
@@ -89,7 +79,6 @@ namespace VE
 					this->vertexSize = vertexSize;
 					this->vertexCount = vertexCount;
 					this->indices = indices;
-					this->indiceCount = vertexCount;
 					this->cb = cb;
 					this->cbSize = cbSize;
 				}
@@ -97,8 +86,7 @@ namespace VE
 				void* verties;
 				unsigned int vertexSize;
 				unsigned int vertexCount;
-				void* indices;
-				unsigned int indiceCount;
+				std::vector<unsigned int> indices;
 				void* cb;
 				unsigned int cbSize;
 				unsigned int id;

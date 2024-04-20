@@ -6,7 +6,7 @@ struct constant
 	float x = 0;
 	float y = 0;
 	float z = 0;
-}cc;
+}cc, cc1;
 
 struct vec3
 {
@@ -19,13 +19,32 @@ struct Vertex
 	vec3 color;
 };
 
-Vertex t[3] =
+Vertex tri[3] =
 {
-		{-1, -1, 0, 1,.2,1},
-		{0, 1, 0, .7,1,.5},
-		{1, -1, 0, 0.1,1,.6}
+	{{-0.5,-0.5,0}, {1,0,0},},
+	{{0,0.5,0}, {0,1,0},},
+	{{0.5,-0.5,0}, {0,0,1}},
 };
-
+Vertex sqr[] =
+{
+	{{-0.5, 0.5, 0}, {1,0,0} },
+	{{0.5, 0.5, 0}, {0,1,0} },
+	{{0.5, -0.5, 0}, {0,0,1} },
+	{{-0.5, -0.5, 0}, {0,1,0} },
+	{{-0.5, 0.5, 0}, {1,0,0} },
+};
+Vertex index_sqr[4]
+{
+	{{-0.5, 0.5, 0}, {1,0,1} },
+	{{0.5, 0.5, 0}, {1,1,0} },
+	{{0.5, -0.5, 0}, {0,1,1} },
+	{{-0.5, -0.5, 0}, {1,1,1} },
+};
+template<class T, class ...Arg> 
+T* New(Arg... args)
+{
+	return new T(args);
+}
 void Game0::Start()
 {
 	////INIT WINDOW
@@ -34,15 +53,31 @@ void Game0::Start()
 	ge = new VGraphics(wnd);
 	//////INIT RESOURCE MANAGER
 	rc = new VResourceChief();
-	//////INIT RESOURCE MANAGER
+	//////INI INPUT MANAGER
 	ipt = new VInput();
 
-	//tri.vertexCount = 3;
-	//tri.vertexSize = sizeof(Vertex);
-	//tri.verties = &t;
-	//tri.cb = &cc;
-	//tri.cbSize = sizeof(cc);
-	this->tri = ge->resourceManager->createMesh(&t, sizeof(Vertex), 3U, 0, 0, &cc, sizeof(cc));
+
+	#define arrayItemCount(array) sizeof(array) / sizeof(array[0]);
+
+
+	int sqrvertexCount = arrayItemCount(index_sqr)
+
+	std::vector<unsigned int> sqrindices = { 0, 1, 2, 0, 2, 3 };
+
+
+	Vertex* sqr = new Vertex[4]
+	{
+		{{-0.5, 0.5, 0}, {1,0,1} },//index 0
+		{{0.5, 0.5, 0}, {1,1,0} },//index 1
+		{{0.5, -0.5, 0}, {0,1,1} },//index 2
+		{{-0.5, -0.5, 0}, {1,1,1} },//index 3
+	};
+
+	this->Mesh0 = ge->resourceManager->createMesh(sqr, sizeof(Vertex), sqrvertexCount, sqrindices, &cc, sizeof(cc));
+
+	std::vector<unsigned int> null;
+	this->Mesh1 = ge->resourceManager->createMesh(tri, sizeof(Vertex), 3, null, &cc1, sizeof(cc1));
+
 }
 
 void Game0::Update()
@@ -56,27 +91,30 @@ void Game0::Update()
 	//get user input 
 	if (ipt->isKey(VKeyCode::_A, VKeyState::Down))
 	{
-		cc.x -= 0.1;
+		cc.x -= 0.02;
 	}
 	if (ipt->isKey(VKeyCode::_D, VKeyState::Down))
 	{
-		cc.x += 0.1;
+		cc.x += 0.02;
 	}
 	if (ipt->isKey(VKeyCode::_W, VKeyState::Down))
 	{
-		cc.y += 0.1;
+		cc.y += 0.02;
 	}
 	if (ipt->isKey(VKeyCode::_S, VKeyState::Down))
 	{
-		cc.y -= 0.1;
+		cc.y -= 0.02;
 	}
 
+	//update window's input system
 	wnd->Update();
+
+	//render scene on window 
 	ge->ClearScreenColor(0, 1, 0, 0);
 
+	ge->SetMesh(Mesh0);
 
-	ge->SetMesh(tri);
-
+	ge->SetMesh(Mesh1);
 
 	ge->Present();
 }

@@ -21,7 +21,7 @@ namespace VE
 			//will a set a Vertex shader for the render system to use 
 			void SetVertexShader(void* vs);
 			//will a set a Mesh the render system to use 
-			void SetMesh(VE::Graphics::Resources::VMesh* mesh);
+			void SetMesh(VE::Graphics::Resources::VMesh mesh);
 			//will clear the color of the texture to a given color
 			void ClearScreenColor(float r, float g, float b, float a);
 			//will present what was draw on the render texture so we can see it 
@@ -38,7 +38,7 @@ namespace VE
 			//will present what was draw on the render texture so we can see it 
 			void(*present)(void* rs) = nullptr;
 			//will a set a Mesh the render system to use 
-			void(*setMesh)(void* rs, VE::Graphics::Resources::VMesh* mesh) = nullptr;
+			void(*setMesh)(void* rs, VE::Graphics::Resources::VMesh mesh) = nullptr;
 			//________________________________________________________________
 			
 			//window to render to
