@@ -1,3 +1,8 @@
+#if _WIN32 
+#include <Windows.h>
+
+#endif
+
 #include <VInput/VInput.h>
 
 bool VE::Input::VInput::isKey(VKeyCode key, VKeyState state)

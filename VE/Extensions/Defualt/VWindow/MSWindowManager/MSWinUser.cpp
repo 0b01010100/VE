@@ -1,6 +1,38 @@
 #include "MSWinUser.h"
+//#define UNICODE
+#include <Windows.h>
+#include <sstream>
+//creates a Microsift specefic window
+static void* MSW_CreateWindow(const wchar_t* name, long SizeX, long SizeY);
+//update window
+__declspec(noinline) static  void MSW_UpdateWindow(void* hwnd);
+//Gets the client Size of the window
+__declspec(noinline) static void MSW_GetClientWindowRect(void* hwnd, long rect[4]);
+//Debugging only for MS window creation tool
+#define MS_ERROR(error_type, ...) \
+{ \
+	std::wstringstream stream = {}; \
+	stream << error_type << L"\n" <<__VA_ARGS__ << __FILEW__ << L"\n"; \
+	printf("%ls", stream.str().c_str()); \
+	OutputDebugStringW(stream.str().c_str()); \
+	MessageBoxW(0, stream.str().c_str(), error_type, MB_ICONERROR | MB_OK); \
+}
 
-void * MS_CreateWindow(const wchar_t * name, long SizeX, long SizeY)
+struct IWindow
+{
+    void(*updateWindow);
+    void(*getClientWindowRect);
+};
+void* MSW_init(void* window, const wchar_t* name, long SizeX, long SizeY)
+{
+    IWindow* wnd =  reinterpret_cast<IWindow*>(window);
+    wnd->updateWindow = MSW_UpdateWindow;
+    wnd->getClientWindowRect = MSW_GetClientWindowRect;
+    void* hwnd = MSW_CreateWindow(name, SizeX, SizeY);
+    return hwnd;
+}
+
+static void * MSW_CreateWindow(const wchar_t * name, long SizeX, long SizeY)
 {
     //describe the window
     WNDCLASSW wc = { 0 };
@@ -11,7 +43,7 @@ void * MS_CreateWindow(const wchar_t * name, long SizeX, long SizeY)
     //id of the application
     wc.hInstance = GetModuleHandleW(0);
     //windows Cursor
-    wc.hCursor = LoadCursor(0, IDC_IBEAM);
+    wc.hCursor = LoadCursorW(0, IDC_IBEAM);
 
     //get screen screen width
     int screenWidth = GetSystemMetrics(SM_CXSCREEN);
@@ -56,11 +88,21 @@ void * MS_CreateWindow(const wchar_t * name, long SizeX, long SizeY)
     ShowWindow(hwnd, SW_SHOW);
     return hwnd;
 }
-__declspec(noinline)
-void MS_UpdateWindow(void * hwnd)
+__declspec(noinline) static
+void MSW_UpdateWindow(void * hwnd)
 {
     //check for messages and call event handlers
     MSG msg = {};
-    PeekMessageW(&msg, (HWND)hwnd, 0, 0, PM_REMOVE);
+    PeekMessageW(&msg, reinterpret_cast<HWND>( hwnd ), 0, 0, PM_REMOVE);
     DispatchMessageW(&msg);
+}
+__declspec(noinline) static
+void MSW_GetClientWindowRect(void* hwnd, long rect[4])
+{
+    RECT wr;
+    GetClientRect(reinterpret_cast<HWND>(hwnd), &wr);
+    rect[0] = wr.left;
+    rect[1] = wr.top;
+    rect[2] = wr.right;
+    rect[3] = wr.bottom;
 }

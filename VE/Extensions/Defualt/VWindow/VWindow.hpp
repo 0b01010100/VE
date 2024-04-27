@@ -3,18 +3,25 @@ namespace VE
 {
 	namespace Window
 	{
-			//used for speciying the Api to use
-			enum class VAPI : unsigned char
-			{
+		struct VWRect
+		{
+			long    left;
+			long    top;
+			long    right;
+			long    bottom;
+		};
+		//used for speciying the Api to use
+		enum class VAPI : unsigned char
+		{
 #ifdef _WIN32
-				//Window Api by Microsoft
-				WINDOWS,
+			//Window Api by Microsoft
+			WINDOWS,
 #endif
-				//Window Api by Silicon Graphics, Inc.
-				OGL,
-				//Other Window Api by Khronos Group
-				VULKAN
-			};
+			//Window Api by Silicon Graphics, Inc.
+			OGL,
+			//Other Window Api by Khronos Group
+			VULKAN
+		};
 		//A WINDOW
 		class VWindow
 		{
@@ -27,9 +34,11 @@ namespace VE
 			VWindow(const wchar_t* Name, long SizeX, long SizeY, VAPI Api);
 			//for updateting the window 
 			void Update();
+			VWRect GetClientWindowRect();
 		private:
 			//used to point to an Api specfic function that will update the window
 			void(*update)(void* phwnd) = nullptr;
+			void(*getClientWindowRect)(void* phwnd, long rect[4]) = nullptr;
 		public:
 			//used to point to an Api specfic id for a window
 			void* phwnd = nullptr;

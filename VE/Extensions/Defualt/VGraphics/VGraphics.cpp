@@ -1,4 +1,5 @@
 #include "VGraphics.hpp"
+#include <VGraphics/MSGraphicsManager/MSDX11.hpp>
 #include<stdio.h>
 
 VE::Graphics::VGraphics::VGraphics(class VE::Window::VWindow* wnd)

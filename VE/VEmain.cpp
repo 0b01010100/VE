@@ -2,10 +2,9 @@
 
 int main()
 {	
-	Game0* game = new Game0();
-	game->Start();
+	Game0 game;
 	while (true) 
 	{
-		game->Update();
+		game.Update();
 	}
 }

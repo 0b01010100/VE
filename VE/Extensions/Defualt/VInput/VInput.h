@@ -1,7 +1,4 @@
-#if _WIN32 
-#include <Windows.h>
-
-#endif
+#pragma once
 #include<map>
 namespace VE 
 {
@@ -54,11 +51,11 @@ namespace VE
 
 #if _WIN32
 			//ESCAPE KEY
-			_ESC = VK_ESCAPE,
+			_ESC = 0x1B,
 			//RIGHT SHFT
-			_RS = VK_RSHIFT,
+			_RS = 0xA1,
 			//LEFT SHIFT
-			_LS = VK_LSHIFT,
+			_LS = 0xA0,
 #endif
 		};
 		//states that keys on a keyboard can have 
@@ -75,9 +72,9 @@ namespace VE
 		class VInput
 		{
 		public:
-			bool isKey(VKeyCode key, VKeyState state);
+			bool isKey(enum VKeyCode key, enum VKeyState state);
 			//keeps track of all the keys that you want to check for using the isKey function
-			std::map<VKeyCode, VKeyState> mkeys;
+			class std::map<enum VKeyCode, enum VKeyState> mkeys;
 		};
 	};
 };

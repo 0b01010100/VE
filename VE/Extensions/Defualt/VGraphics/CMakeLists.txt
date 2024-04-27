@@ -1,6 +1,5 @@
 add_library(MSGE STATIC
 	"MSGraphicsManager/MSDX11.cpp"
-	"req.h"
 	"VGraphicsResourceChief.cpp"
 	"VGraphics.cpp"
 )

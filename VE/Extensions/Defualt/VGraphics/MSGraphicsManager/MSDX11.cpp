@@ -1,40 +1,6 @@
 #include "MSDX11.hpp"
-//Used for Error Handling related to windows only.
-#define DX11_ERROR(hr, error, retvalue)\
-{\
-	if(FAILED(hr)){\
-		std::wostringstream ws; \
-		ws << L"DX11 ERROR \n" << error<< L"\n"<< L"Error Code: " << hr << "\n"; \
-		OutputDebugStringW(ws.str().c_str()); \
-		MessageBoxW(0, ws.str().c_str(), L"DX11 ERROR" , 0);\
-		retvalue;\
-	}\
-\
-}
-//Used for warrning Handling related to windows only.
-#define DX11_WARNING(expr,err_code, details)\
-{\
-	if(expr != 0){\
-		std::wostringstream ws; \
-		ws << L"DX11 WARNING \n" << details << "\n" << L"Error Code: " << err_code << "\n"; \
-		OutputDebugStringW(ws.str().c_str()); \
-		MessageBoxW(0, ws.str().c_str(), L"DX11 WARNING" , 0);\
-	}\
-\
-}
+#include "private.h"
 
-#include <assert.h>
-//Assert if value is null
-#define NULL_ERROR(arg, error, retvalue)\
-{\
-	if(arg == 0){\
-		std::wostringstream ws; \
-		ws << error<< L"\n"; \
-		OutputDebugStringW(ws.str().c_str()); \
-		MessageBoxW(0, ws.str().c_str(), L"NULL_ERROR" , 0);\
-		retvalue;\
-	}\
-}
 enum D3D_DRIVER_TYPE drivers[] =
 {
 	//Drawing is mainly Executed to the GPU when using this Driver
@@ -67,7 +33,18 @@ struct IGraphicsEngine
 	//________________________________________________________________
 
 };
-
+#define bit_cast(inType, inval, outType, out)\
+{\
+	{\
+	union\
+	{\
+	inType src; \
+	outType dest; \
+	}u; \
+	u.src = inval; \
+	out = u.dest; \
+	}\
+}
 void* DX11_init(void* hwnd, void* graphics)
 {
 	//FAKING INHERITANCE BY REINTERPRET_CASTING 

@@ -9,8 +9,7 @@ VE::Window::VWindow::VWindow(const wchar_t* Name, long SizeX, long SizeY, VAPI A
 	switch (Api)
 	{
 		case VAPI::WINDOWS:
-			this->phwnd = MS_CreateWindow(Name, SizeX, SizeY);
-			update = MS_UpdateWindow;
+			this->phwnd = MSW_init(this, Name, SizeX, SizeY);
 			break;
 		case VAPI::OGL:
 			break;
@@ -30,3 +29,11 @@ void VE::Window::VWindow::Update()
 {
 	this->update(this->phwnd);
 }
+
+VE::Window::VWRect VE::Window::VWindow::GetClientWindowRect()
+{
+	long rect[4] = {};
+	this->getClientWindowRect(this->phwnd, rect);
+	return VWRect(rect[0],rect[1], rect[2], rect[3]);
+}
+

@@ -1,11 +1,17 @@
 //vs_5_0
+struct Transform
+{
+    matrix WorldMatrix;
+    matrix ViewMatrix;
+    matrix ProjectionMatrix;
+};
 cbuffer constant : register(b0)
 {
-    float4 posOffset;
+    Transform transform;
 }
 struct VS_INPUT
 {
-    float3 position : POSITION;
+    float4 position : POSITION;
     float3 color : COLOR;
 };
 
@@ -19,7 +25,13 @@ VS_OUTPUT vsmain(VS_INPUT input)
 {
     VS_OUTPUT output = (VS_OUTPUT) 0;
     
-    output.position = float4(input.position, 1.F) + posOffset;
+    //World Matrix Space
+    output.position = mul(input.position, transform.WorldMatrix);
+    //View Matrix Space
+    output.position = mul(output.position, transform.ViewMatrix);
+    //Projection Matrix Space
+    output.position = mul(output.position, transform.ProjectionMatrix);
+     
     output.color = input.color;
     
     return output;

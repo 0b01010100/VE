@@ -1,0 +1,72 @@
+#include <Vvec3>
+struct Vmat4x4
+{
+	Vmat4x4()
+	{
+		this->i00 = 1;		this->i01 = 0;		this->i02 = 0;		this->i03 = 0;
+
+		this->i10 = 0;		this->i11 = 1;		this->i12 = 0;		this->i13 = 0;
+
+		this->i20 = 0;		this->i21 = 0;		this->i22 = 1;		this->i23 = 0;
+
+		this->i30 = 0;		this->i31 = 0;		this->i32 = 0;		this->i33 = 1;
+	}
+	Vmat4x4
+	(
+		float var
+	)
+	{
+		this->i00 = var;		this->i01 = var;		this->i02 = var;		this->i03 = var;
+
+		this->i10 = var;		this->i11 = var;		this->i12 = var;		this->i13 = var;
+
+		this->i20 = var;		this->i21 = var;		this->i22 = var;		this->i23 = var;
+
+		this->i30 = var;		this->i31 = var;		this->i32 = var;		this->i33 = var;
+	}
+	Vmat4x4
+	(
+		float i00, float i01, float i02, float i03,
+		float i10, float i11, float i12, float i13,
+		float i20, float i21, float i22, float i23,
+		float i30, float i31, float i32, float i33
+	)
+	{
+		this->i00 = i00;		this->i01 = i01;		this->i02 = i02;		this->i03 = i03;
+
+		this->i10 = i10;		this->i11 = i11;		this->i12 = i12;		this->i13 = i13;
+
+		this->i20 = i20;		this->i21 = i21;		this->i22 = i22;		this->i23 = i23;
+
+		this->i30 = i30;		this->i31 = i31;		this->i32 = i32;		this->i33 = i33;
+	}
+	union
+	{
+		struct
+		{
+			float i00, i01, i02, i03;
+			float i10, i11, i12, i13;
+			float i20, i21, i22, i23;
+			float i30, i31, i32, i33;
+		};
+		struct
+		{
+			float arr[4][4];
+		};
+	};
+};
+
+static Vmat4x4 operator *= (Vmat4x4 a, Vmat4x4 b)
+{
+	Vmat4x4 c;
+	for (int row = 0; row < 4; row++)
+		{
+			for (int col = 0; col < 4; col++)
+			{
+				c.arr[row][col] =
+					a.arr[row][0] * b.arr[0][col] + a.arr[row][1] * b.arr[1][col] +
+					a.arr[row][2] * b.arr[2][col] + a.arr[row][3] * b.arr[3][col];
+			}
+		}
+	return c;
+}

@@ -1,6 +1,5 @@
 #pragma once
 #include <VWindow/VWindow.hpp>
-#include <VGraphics/MSGraphicsManager/MSDX11.hpp>
 #include <VGraphics/VGraphicsResourceChief.hpp>
 
 namespace VE

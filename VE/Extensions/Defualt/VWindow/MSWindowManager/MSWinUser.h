@@ -1,19 +1,14 @@
 #pragma once
-//#define UNICODE
-#include <Windows.h>
-#include <sstream>
 
+//init the Microsift specefic window system
+void* MSW_init(void* window, const wchar_t* name, long SizeX, long SizeY);
+
+//THESE FUNCTIONS ARE PRIVATE AND IN MSWinUser.cpp
 //creates a Microsift specefic window
-void* MS_CreateWindow(const wchar_t* name, long SizeX, long SizeY);
-//update window
+//static void* MSW_CreateWindow(const wchar_t* name, long SizeX, long SizeY);
 
-__declspec(noinline) void MS_UpdateWindow(void * hwnd);
-//Debugging only for MS window creation tool
-#define MS_ERROR(error_type, ...) \
-{ \
-	std::wstringstream stream = {}; \
-	stream << error_type << L"\n" <<__VA_ARGS__ << __FILEW__ << L"\n"; \
-	printf("%ls", stream.str().c_str()); \
-	OutputDebugStringW(stream.str().c_str()); \
-	MessageBoxW(0, stream.str().c_str(), error_type, MB_ICONERROR | MB_OK); \
-}
+//update window
+//static __declspec(noinline) void MSW_UpdateWindow(void * hwnd);
+
+//Gets the client Size of the window
+//__declspec(noinline) static void MSW_GetClientWindowRect(void* hwnd, long rect[4]);
