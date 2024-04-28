@@ -1,18 +1,13 @@
 #pragma once
-#include <Game0/G/VGame0.h>
+class Entity;
 #include <VWindow/VWindow.hpp>
 #include <VGraphics/VGraphics.hpp>
 #include <VInput/VInput.h>
-#define Vec3 
-#define Mat4x4 
-#include <VMath/VMath.h>
-
+#include "Entity.h"
 
 using namespace VE::Window;
 using namespace VE::Graphics;
 using namespace VE::Input;
-using namespace VE::VMath;
-
 
 class Game0
 {
@@ -27,6 +22,5 @@ public:
 	VGraphics* ge = nullptr;
 	VInput* ipt = nullptr;
 
-	Resources::VMesh Mesh0;
-	Resources::VMesh Mesh1;
+	class Entity* entity;
 };

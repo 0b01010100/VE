@@ -3,6 +3,7 @@ add_library(Def STATIC
 	"VGraphics/VGraphics.cpp"
 	"VInput/VInput.cpp"
 	"VMath/VMath.cpp"
+	
 )
 add_subdirectory(VWindow)
 
@@ -22,3 +23,4 @@ target_link_libraries(Def PUBLIC VInput)
 add_subdirectory(VMath)
 target_include_directories(VMath PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_link_libraries(Def PUBLIC VMath)
+

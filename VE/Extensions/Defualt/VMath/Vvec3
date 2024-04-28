@@ -1,43 +1,47 @@
 #pragma once 
-typedef struct Vvec3 
+namespace VE
 {
-
-	
-	Vvec3()
+	namespace Math
 	{
-		this->x = 0;
-		this->y = 0;
-		this->z = 0;
-	}
-	Vvec3(float var)
-	{
-		this->x = var;
-		this->y = var;
-		this->z = var;
-	}
-	Vvec3(float x, float y, float z)
-	{
-		this->x = x;
-		this->y = y;
-		this->z = z;
-	}
-	//retrun all of the values of the matrix
-	std::wstring __str__()
-	{
-		std::wostringstream stream;
-		stream << "Vector 3\n" 
-					<< "["<<" "<<x<<" "<<y<<" "<<z<<" ]\n";
-		return stream.str();
-	}
-	union
-	{
-		struct 
+		typedef struct Vvec3 
 		{
-			float x, y, z;
-		};
-		struct 
-		{
-			float arr[3];
-		};
+			Vvec3()
+			{
+				this->x = 0;
+				this->y = 0;
+				this->z = 0;
+			}
+			Vvec3(float var)
+			{
+				this->x = var;
+				this->y = var;
+				this->z = var;
+			}
+			Vvec3(float x, float y, float z)
+			{
+				this->x = x;
+				this->y = y;
+				this->z = z;
+			}
+			//retrun all of the values of the matrix
+			std::wstring __str__()
+			{
+				std::wostringstream stream;
+				stream << "Vector 3\n" 
+							<< "["<<" "<<x<<" "<<y<<" "<<z<<" ]\n";
+				return stream.str();
+			}
+			union
+			{
+				struct 
+				{
+					float x, y, z;
+				};
+				struct 
+				{
+					float arr[3];
+				};
+			};
+		}Vvec3, Vvector3, Vfloat3;
 	};
-}Vvec3, Vvector3, Vfloat3;
+};

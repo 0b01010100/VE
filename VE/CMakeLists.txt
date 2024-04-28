@@ -8,7 +8,7 @@ if(WIN32)
 endif()
 add_library(Games STATIC
     "Games/Game0/G/VGame0.cpp"
-)
+ "Games/Game0/G/Entity.cpp")
 include_directories("${CMAKE_SOURCE_DIR}/Games/Game0")
 
 # Include directories for engine header files
@@ -19,6 +19,7 @@ add_subdirectory(Extensions)
 add_executable(
     VE
     "VEmain.cpp"
+    "Games/Game0/G/Entity.cpp"
 )
 
 # Link the libraries to the executables
