@@ -1,3 +1,5 @@
+#include <string>
+#include <sstream>
 namespace VE
 {
 	namespace VMath

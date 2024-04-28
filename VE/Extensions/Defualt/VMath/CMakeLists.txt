@@ -1,5 +1,5 @@
 add_library(VMath STATIC 
-	"VMath.h"
+
 	"VMath.cpp"
 )
 

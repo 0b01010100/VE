@@ -1,7 +1,8 @@
 #pragma once 
 typedef struct Vvec3 
 {
-	float x, y, z;
+
+	
 	Vvec3()
 	{
 		this->x = 0;
@@ -20,4 +21,23 @@ typedef struct Vvec3
 		this->y = y;
 		this->z = z;
 	}
+	//retrun all of the values of the matrix
+	std::wstring __str__()
+	{
+		std::wostringstream stream;
+		stream << "Vector 3\n" 
+					<< "["<<" "<<x<<" "<<y<<" "<<z<<" ]\n";
+		return stream.str();
+	}
+	union
+	{
+		struct 
+		{
+			float x, y, z;
+		};
+		struct 
+		{
+			float arr[3];
+		};
+	};
 }Vvec3, Vvector3, Vfloat3;

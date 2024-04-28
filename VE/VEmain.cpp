@@ -7,4 +7,5 @@ int main()
 	{
 		game.Update();
 	}
+	return 0;
 }

@@ -1,5 +1,8 @@
+#pragma once
 #include <Vvec3>
-struct Vmat4x4
+#include "VMath.h"
+
+typedef struct Vmat4x4
 {
 	Vmat4x4()
 	{
@@ -40,6 +43,35 @@ struct Vmat4x4
 
 		this->i30 = i30;		this->i31 = i31;		this->i32 = i32;		this->i33 = i33;
 	}
+	void setIdentity()
+	{
+		this->i00 = 1;		this->i01 = 0;		this->i02 = 0;		this->i03 = 0;
+
+		this->i10 = 0;		this->i11 = 1;		this->i12 = 0;		this->i13 = 0;
+
+		this->i20 = 0;		this->i21 = 0;		this->i22 = 1;		this->i23 = 0;
+
+		this->i30 = 0;		this->i31 = 0;		this->i32 = 0;		this->i33 = 1;
+	}
+	void setOrthoLH(float width, float height, float near_plane, float far_plane)
+	{
+		setIdentity();
+		arr[0][0] = (1.0f / width);
+		arr[1][1] =(1.0f / height);
+		arr[2][2] = (1.0f / (far_plane - near_plane));
+		arr[3][2] = ( - (near_plane / (far_plane - near_plane)));
+	}
+	//retrun all of the values of the matrix
+	std::wstring __str__()
+	{
+		std::wostringstream stream;
+		stream << "4 by 4 Matrix\n" 
+					<< "["<<" "<<i00<<" "<<i01<<" "<< i02<<" "<<i03<<" ]\n"
+					<< "["<<" "<<i10<<" "<<i11<<" "<< i12<<" "<<i13<<" ]\n"
+					<< "["<<" "<<i20<<" "<<i21<<" "<< i22<<" "<<i23<<" ]\n"
+					<< "["<<" "<<i30<<" "<<i31<<" "<< i32<<" "<<i33<<" ]\n";
+		return stream.str();
+	}
 	union
 	{
 		struct
@@ -54,7 +86,7 @@ struct Vmat4x4
 			float arr[4][4];
 		};
 	};
-};
+}Vmat4x4, Vmatrix4x4, Vfloat4x4;
 
 static Vmat4x4 operator *= (Vmat4x4 a, Vmat4x4 b)
 {
