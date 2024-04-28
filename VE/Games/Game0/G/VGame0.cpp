@@ -1,17 +1,18 @@
 #include "VGame0.h"
 #include <string>
 #include <iostream>
-
+#include "Entity/ESqr.h"
+#include "Entity/EEntity.h"
 Game0::Game0()
 {
 	////INIT WINDOW
-	wnd = new VWindow(L"Scene", 300, 300, VAPI::WINDOWS);
+	wnd = new VWindow(L"Scene", 0, 0, VAPI::WINDOWS);
 	//////INIT GRAPHICS ENGINE
 	ge = new VGraphics(wnd);
 	//////INIT INPUT MANAGER
 	ipt = new VInput();
-
-	entity = new Entity(this);
+	//////INIT ENTITY
+	entity = new ESqr(this);
 
 }
 
@@ -20,7 +21,7 @@ void Game0::Update()
 	//update window's input system
 	wnd->Update();
 	
-	//render scene on window 
+	//render scene on window and update Entity
 	ge->ClearScreenColor(0, 0, 0, 0);
 	entity->Update();
 	ge->Present();
