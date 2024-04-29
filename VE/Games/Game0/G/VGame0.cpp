@@ -23,6 +23,8 @@ void Game0::Update()
 	
 	//render scene on window and update Entity
 	ge->ClearScreenColor(0, 0, 0, 0);
+
 	entity->Update();
+
 	ge->Present();
 }

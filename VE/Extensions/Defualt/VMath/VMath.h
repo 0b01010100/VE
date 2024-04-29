@@ -1,6 +1,8 @@
 #include <string>
 #include <sstream>
 #include <math.h>
+#define V_pi 3.14159265358979323846F
+#define V_e 2.71828182845904523536F
 //want to use a Vector 3 then do #define Vec3
 #if defined(_Vec3)
 #include "Vvec3"

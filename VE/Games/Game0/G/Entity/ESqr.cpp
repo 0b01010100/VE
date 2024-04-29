@@ -10,19 +10,22 @@ ESqr::ESqr(class Game0 * game) : EEntity(game)
 	std::vector<unsigned int> sqrindices = { 0, 1, 2, 0, 2, 3 };
 
 	Vmat4x4 mat;
-	mat.setScale(1.f, 1.f, 1.f);
+	transform.world.setIdentity();
+	mat.setIdentity();
+	mat.setRotationZr(4.3);
 	transform.world = transform.world * mat;
+	mat.setIdentity();
+	mat.setScale(.10f, 1.f, 1.f);	
 	mat.setPosition(-0.5f, 0.f, 0.f);
 	transform.world = transform.world * mat;
-	mat.setRotationZd(60.f);
-	transform.world = transform.world * mat;
+
 	this->Mesh0 = game->ge->resourceManager->createMesh(VE::Math::Shapes::indexSqr, sizeof(Vvertex), sqrvertexCount, sqrindices, &transform, sizeof(transform));
 }
 
 void ESqr::Update()
 {
 	Vmat4x4 temp;
-	Vvec3 temp1;
+	temp.setIdentity();
 	//get user input 
 	if (game->ipt->isKey(VKeyCode::_A, VKeyState::Down))
 	{
@@ -46,6 +49,7 @@ void ESqr::Update()
 
 	Vmat4x4 proj;
 	Vmat4x4 view;
+	view.setIdentity();
 	VWRect wr = game->wnd->GetClientWindowRect();
 	proj.setOrthoLH(
 		((static_cast<float>(wr.right) - wr.left) / 300),
@@ -54,10 +58,9 @@ void ESqr::Update()
 		4.0f
 	);
 	transform.view = view;
-
 	transform.world = transform.world * temp;
 	transform.proj = proj;
-	printf("%ws", transform.world.__str__().c_str());
+	printf("%ws", transform.world.getPosition().__str__().c_str());
 
 	this->game->ge->SetMesh(Mesh0);
 }
