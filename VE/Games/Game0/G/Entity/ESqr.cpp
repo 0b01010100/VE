@@ -4,10 +4,8 @@ ESqr::ESqr(class Game0 * game) : EEntity(game)
 {
 	#define arrayItemCount(array) sizeof(array) / sizeof(array[0]);
 
-
-	int sqrvertexCount = arrayItemCount(VE::Math::Shapes::indexSqr);
-
-	std::vector<unsigned int> sqrindices = { 0, 1, 2, 0, 2, 3 };
+	using namespace VE::Math::Primitives;
+	int sqrvertexCount = arrayItemCount(INDEXED_SQUARE);
 
 	Vmat4x4 mat;
 	transform.world.setIdentity();
@@ -18,8 +16,8 @@ ESqr::ESqr(class Game0 * game) : EEntity(game)
 	mat.setScale(.10f, 1.f, 1.f);	
 	mat.setPosition(-0.5f, 0.f, 0.f);
 	transform.world = transform.world * mat;
-
-	this->Mesh0 = game->ge->resourceManager->createMesh(VE::Math::Shapes::indexSqr, sizeof(Vvertex), sqrvertexCount, sqrindices, &transform, sizeof(transform));
+	
+	this->Mesh0 = game->ge->resourceManager->createMesh(INDEXED_SQUARE, sizeof(Vvertex), sqrvertexCount, INDEXED_SQUARE_INDIES, 6, &transform, sizeof(transform));
 }
 
 void ESqr::Update()
