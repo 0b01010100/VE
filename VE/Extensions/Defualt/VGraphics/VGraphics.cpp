@@ -2,21 +2,22 @@
 #include <VGraphics/MSGraphicsManager/MSDX11.hpp>
 #include<stdio.h>
 
-VE::Graphics::VGraphics::VGraphics(class VE::Window::VWindow* wnd)
+VE::Graphics::VGraphics::VGraphics(void* WindowHandle, unsigned int RenderingApi)
 {
 	resourceManager = new VGraphicsResourceChief(); 
-	this->wnds = wnd;
-	switch (wnd->renderingApi)
+	this->WindowHandle = WindowHandle;
+	this->RenderingApi = RenderingApi;
+	switch (RenderingApi)
 	{
 #ifdef _WIN32
-	case VE::Window::VAPI::WINDOWS:
-			this->renderSystem = DX11_init(wnd->phwnd, this);
+	case 0 : //VE::Window::VAPI::WINDOWS:
+			this->renderSystem = DX11_init(WindowHandle, this);
 			break;
 #endif
-		case  VE::Window::VAPI::OGL:
+	case  1: //VE::Window::VAPI::OGL:
 			break;
 
-		case  VE::Window::VAPI::VULKAN:
+	case 2:// VE::Window::VAPI::VULKAN:
 			break;
 
 		default:
@@ -52,6 +53,11 @@ void VE::Graphics::VGraphics::ClearScreenColor(float r, float g, float b, float 
 void VE::Graphics::VGraphics::Present()
 {
 	this->present(this->renderSystem);
+}
+
+unsigned int VE::Graphics::VGraphics::GetRenderingAPi() const noexcept
+{
+	return this->RenderingApi;
 }
 
 

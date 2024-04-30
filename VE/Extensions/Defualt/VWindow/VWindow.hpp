@@ -11,7 +11,7 @@ namespace VE
 			long    bottom;
 		};
 		//used for speciying the Api to use
-		enum class VAPI : unsigned char
+		enum class VAPI : unsigned int
 		{
 #ifdef _WIN32
 			//Window Api by Microsoft
@@ -35,16 +35,18 @@ namespace VE
 			//for updateting the window 
 			void Update();
 			VWRect GetClientWindowRect();
+			unsigned int GetRenderingApi() const noexcept;
+			void* GetWindowHandle() const noexcept;
 		private:
 			//used to point to an Api specfic function that will update the window
 			void(*update)(void* phwnd) = nullptr;
 			void(*getClientWindowRect)(void* phwnd, long rect[4]) = nullptr;
-		public:
-			//used to point to an Api specfic id for a window
+	
+			//used to pointer to an Api specfic id for a window
 			void* phwnd = nullptr;
 			
 		public:
-			VAPI renderingApi;
+			VAPI RenderingApi;
 		};
 	}
 

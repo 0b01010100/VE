@@ -8,7 +8,7 @@ Game0::Game0()
 	////INIT WINDOW
 	wnd = new VWindow(L"Scene", 0, 0, VAPI::WINDOWS);
 	//////INIT GRAPHICS ENGINE
-	ge = new VGraphics(wnd);
+	ge = new VGraphics(wnd->GetWindowHandle(), wnd->GetRenderingApi());
 	//////INIT INPUT MANAGER
 	ipt = new VInput();
 	//////INIT ENTITY

@@ -1,5 +1,4 @@
 #pragma once
-#include <VWindow/VWindow.hpp>
 #include <VGraphics/VGraphicsResourceChief.hpp>
 
 namespace VE
@@ -7,13 +6,16 @@ namespace VE
 	namespace Graphics
 	{
 		/*extends IGraphicsEngine_Base*/
-		#include <VGraphics/req.h>
+	
 		//A GRAPHICS ENGINE 
 		class VGraphics
 		{
 		public:
-			//initialize the Graphics Engine
-			VGraphics(class VE::Window::VWindow* wnd);
+			//initialize the Graphics Engine\n
+			//
+			//@param WindowHandle -> Handle to an Api specfic id for the window. Tip if using VWindow API by Virtunity then call the  VWindow::GetWindowHandle function 
+			//@param RenderingApi -> Helps the Graphics engine know what rendering api to use for the window. Tip if using VWindow API by Virtunity then call the  VWindow::GetRenderingAPi function 
+			VGraphics(void* WindowHandle, unsigned int RenderingApi);
 			~VGraphics();
 			//will a set a Pixel/Fragment shader for the render system to use 
 			void SetFragmentShader(void* fs);
@@ -25,6 +27,8 @@ namespace VE
 			void ClearScreenColor(float r, float g, float b, float a);
 			//will present what was draw on the render texture so we can see it 
 			void Present();
+			
+			unsigned int GetRenderingAPi() const noexcept;
 		private:
 			//WARNING ANY MODIFICATION TO THE INTERFACE CAN LEAD TO MEMORY LEAKS
 			//________________________________________________________________
@@ -41,7 +45,9 @@ namespace VE
 			//________________________________________________________________
 			
 			//window to render to
-			class VE::Window::VWindow* wnds = nullptr;
+			void * WindowHandle = nullptr;
+			//The rendering APi
+			unsigned int RenderingApi = 0;
 			//pointer the the render system
 			void* renderSystem = nullptr;
 			//these pointer functions will help us interract with rendering APIs 
