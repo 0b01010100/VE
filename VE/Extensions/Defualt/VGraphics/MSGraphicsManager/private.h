@@ -87,6 +87,10 @@ __declspec(noinline) static void DX11_setFragmentShader(void* rs, void* fs);
 //@param mesh -> the mesh or shap to render
 __declspec(noinline) static void DX11_setMesh(void* rs, VE::Graphics::Resources::VMesh mesh);
 
+//allows us to tell the DX11 how to renderer to render a mesh or shape
+//@param rs -> a pointer to a DX11RenderingDevs which will be represented on a hight level as a render system (or rs)
+//@param topology -> the way to draw the mesh
+__declspec(noinline) static void DX11_SetPrimitiveTopology(void* rs, VE::Graphics::Resources::V_Primitive_Topology topology);
 
 //Used for Error Handling related to windows only.
 #define DX11_ERROR(hr, error, retvalue)\

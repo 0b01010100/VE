@@ -61,4 +61,6 @@ void ESqr::Update()
 	printf("%ws", transform.world.getPosition().__str__().c_str());
 
 	this->game->ge->SetMesh(Mesh0);
+
+	this->game->ge->SetPrimitiveTopology(Resources::V_Primitive_Topology_Point_List);
 }

@@ -21,13 +21,14 @@ namespace VE
 			void SetFragmentShader(void* fs);
 			//will a set a Vertex shader for the render system to use 
 			void SetVertexShader(void* vs);
-			//will a set a Mesh the render system to use 
-			void SetMesh(VE::Graphics::Resources::VMesh mesh);
 			//will clear the color of the texture to a given color
 			void ClearScreenColor(float r, float g, float b, float a);
 			//will present what was draw on the render texture so we can see it 
 			void Present();
-			
+			//will a set a Mesh the render system to use 
+			void SetMesh(VE::Graphics::Resources::VMesh mesh);
+			//will allows us to tell the DX11 how to renderer to render a mesh or shape
+			void SetPrimitiveTopology(VE::Graphics::Resources::V_Primitive_Topology topology);
 			unsigned int GetRenderingAPi() const noexcept;
 		private:
 			//WARNING ANY MODIFICATION TO THE INTERFACE CAN LEAD TO MEMORY LEAKS
@@ -42,6 +43,8 @@ namespace VE
 			void(*present)(void* rs) = nullptr;
 			//will a set a Mesh the render system to use 
 			void(*setMesh)(void* rs, VE::Graphics::Resources::VMesh mesh) = nullptr;
+			//allows us to tell the DX11 how to renderer to render a mesh or shape
+			void(*setTopology)(void* rs, VE::Graphics::Resources::V_Primitive_Topology topology) = nullptr;
 			//________________________________________________________________
 			
 			//window to render to

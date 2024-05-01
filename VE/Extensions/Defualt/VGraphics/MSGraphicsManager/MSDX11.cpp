@@ -29,6 +29,10 @@ struct IGraphicsEngine
 	void(*present)(void* rs) = nullptr;
 	//allows us to tell the renderer to render a mesh or shape
 	void(*setMesh)(void* rs, VE::Graphics::Resources::VMesh mesh) = nullptr;
+	//allows us to tell the DX11 how to renderer to render a mesh or shape
+	void(*setTopology)(void* rs, VE::Graphics::Resources::V_Primitive_Topology topology) = nullptr;
+	
+	
 	//IResourceManager* resourceManager;
 	//________________________________________________________________
 
@@ -45,6 +49,7 @@ void* DX11_init(void* hwnd, void* graphics)
 	ge_b->clearScreenColor = DX11_clearScreenColor;
 	ge_b->present = DX11_present;
 	ge_b->setMesh = DX11_setMesh;
+	ge_b->setTopology = DX11_SetPrimitiveTopology;
 
 	struct DX11RenderingDevs* rs = reinterpret_cast<DX11RenderingDevs*>(malloc(sizeof(struct DX11RenderingDevs)));
 
@@ -314,7 +319,7 @@ void DX11_present(void* rs)
 {
 	struct DX11RenderingDevs* s = reinterpret_cast<struct DX11RenderingDevs*>(rs);
 
-	s->context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	
 
 	//present to make make the render target seeable to human eyes
 	s->sw->Present(1U, 0U);
@@ -431,6 +436,13 @@ void DX11_setMesh(void* rs, VE::Graphics::Resources::VMesh mesh)
 	{
 		s->context->Draw(mesh.vertexCount, 0U);
 	}
+}
+
+void DX11_SetPrimitiveTopology(void* rs, VE::Graphics::Resources::V_Primitive_Topology topology)
+{	
+	struct DX11RenderingDevs* s = reinterpret_cast<struct DX11RenderingDevs*>(rs);
+	D3D11_PRIMITIVE_TOPOLOGY DX11_topology = static_cast<D3D11_PRIMITIVE_TOPOLOGY>(topology);
+	s->context->IASetPrimitiveTopology(DX11_topology);
 }
 
 void DX11_uninit(void* rs, void* graphics)

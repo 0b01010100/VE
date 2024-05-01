@@ -30,7 +30,19 @@ namespace VE
 				//Represents a vector format with two 32 - bit signed integer components.
 				V_INPUT_LAYOUT_FORMAT_R32G32_SINT = 18
 			};
-
+			enum V_Primitive_Topology : unsigned int
+			{
+				//Interpret the vertex data as a list of points.
+				V_Primitive_Topology_Point_List = 1,
+				//Interpret the vertex data as a list of lines.
+				V_Primitive_Topology_Line_List,
+				//Interpret the vertex data as a line strip.
+				V_Primitive_Topology_Line_Strip,
+				//Interpret the vertex data as a list of triangles.
+				V_Primitive_Topology_Triangle_List,
+				//Interpret the vertex data as a triangle strip.
+				V_Primitive_Topology_Triangle_Strip,
+			};
 			static bool operator>=(enum V_INPUT_LAYOUT_FORMAT ls, unsigned int rs)
 			{
 				return (static_cast<unsigned int>(ls) >= rs);

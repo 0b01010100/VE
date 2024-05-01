@@ -1,4 +1,5 @@
 #include "VGraphics.hpp"
+#include "VGraphics.hpp"
 #include <VGraphics/MSGraphicsManager/MSDX11.hpp>
 #include<stdio.h>
 
@@ -53,6 +54,11 @@ void VE::Graphics::VGraphics::ClearScreenColor(float r, float g, float b, float 
 void VE::Graphics::VGraphics::Present()
 {
 	this->present(this->renderSystem);
+}
+
+void VE::Graphics::VGraphics::SetPrimitiveTopology(VE::Graphics::Resources::V_Primitive_Topology topology)
+{
+	this->setTopology(this->renderSystem, topology);
 }
 
 unsigned int VE::Graphics::VGraphics::GetRenderingAPi() const noexcept
