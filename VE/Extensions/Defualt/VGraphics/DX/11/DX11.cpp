@@ -1,5 +1,5 @@
-#include "MSDX11.hpp"
-#include "private.h"
+#include <DX/11/public.c>
+#include <DX/11/private.cpp>
 
 enum D3D_DRIVER_TYPE drivers[] =
 {
@@ -12,8 +12,10 @@ enum D3D_DRIVER_TYPE drivers[] =
 };
 struct IResourceManager
 {
-	void(*createVertexShader)(void* rs, const wchar_t* file_path, const char* entry_point, VE::Graphics::Resources::VInputLayout* inputLayout);
-	void(*createFragmentShader)(void* rs, const wchar_t* file_path, const char* entry_point);
+	void*(*createVertexShader)(void* rs, const wchar_t* file_path, const char* entry_point, VE::Graphics::Resources::VInputLayout* inputLayout);
+	void*(*createFragmentShader)(void* rs, const wchar_t* file_path, const char* entry_point);
+	//pointer the the render system
+	void* renderSystem = nullptr;
 };
 struct IGraphicsEngine
 {
@@ -28,30 +30,37 @@ struct IGraphicsEngine
 	//will present what was draw on the render texture so we can see it 
 	void(*present)(void* rs) = nullptr;
 	//allows us to tell the renderer to render a mesh or shape
-	void(*setMesh)(void* rs, VE::Graphics::Resources::VMesh mesh) = nullptr;
+	void(*drawMesh)(void* rs, VE::Graphics::Resources::VMesh mesh) = nullptr;
 	//allows us to tell the DX11 how to renderer to render a mesh or shape
 	void(*setTopology)(void* rs, VE::Graphics::Resources::V_Primitive_Topology topology) = nullptr;
-	
-	
-	//IResourceManager* resourceManager;
-	//________________________________________________________________
+	//pointer the the render system
+	void* renderSystem = nullptr;
+	IResourceManager* manager;
 
 };
 
-void* DX11_init(void* hwnd, void* graphics)
+void DX11_init(void* hwnd, void* graphics, void* manager)
 {
-	//FAKING INHERITANCE BY REINTERPRET_CASTING 
-	IGraphicsEngine* ge_b = reinterpret_cast<IGraphicsEngine*>(graphics);
-
 	//GIVE THE HIGH LEVEL INTERFACE THE LOW LEVEL FUNCTIONS 
+	IGraphicsEngine* ge_b = reinterpret_cast<IGraphicsEngine*>(graphics);
+	
+	//renderer 
 	ge_b->setFragmentShader = DX11_setFragmentShader;
 	ge_b->setVertexShader = DX11_setVertexShader;
 	ge_b->clearScreenColor = DX11_clearScreenColor;
 	ge_b->present = DX11_present;
-	ge_b->setMesh = DX11_setMesh;
+	ge_b->drawMesh = DX11_drawMesh;
 	ge_b->setTopology = DX11_SetPrimitiveTopology;
 
+	//init resource manager 
+	IResourceManager* gem_b = reinterpret_cast<IResourceManager*>(manager);
+	gem_b->createFragmentShader = DX11_createFragmentShader;
+	gem_b->createVertexShader = DX11_createVertexShader;
+
 	struct DX11RenderingDevs* rs = reinterpret_cast<DX11RenderingDevs*>(malloc(sizeof(struct DX11RenderingDevs)));
+
+	ge_b->renderSystem = (gem_b->renderSystem = rs);
+
 
 	HRESULT hr;
 	for (unsigned char index = 0; index < ARRAYSIZE(drivers);)
@@ -65,23 +74,23 @@ void* DX11_init(void* hwnd, void* graphics)
 		index++;
 	}
 	//check for errors
-	DX11_ERROR(hr, "Failed to set up DirectX 11 rendering system", return 0);
+	DX11_ERROR(hr, "Failed to set up DirectX 11 rendering system", return);
 	//if the creation of devices FAILED throw Error
-	DX11_ERROR(hr, L"Faild to get rendering Devices for DirectX 11 ", return 0);
+	DX11_ERROR(hr, L"Faild to get rendering Devices for DirectX 11 ", return);
 	//else continue on, to get IDXGIDevice struct
 	DX11_ERROR(rs->dev->QueryInterface(__uuidof(struct IDXGIDevice), reinterpret_cast<void**>(&rs->idxgi_dev)), 
-		L"Faild to get a rendering Device for DirectX 11. Device is IDXGIDevice", return 0);
+		L"Faild to get a rendering Device for DirectX 11. Device is IDXGIDevice", return);
 	
 	//Represents your Graphics adapter 
 	struct IDXGIAdapter* apdt = __nullptr;
 
 	//else continue on, to get IDXGIAdapter struct
 	DX11_ERROR(rs->idxgi_dev->GetAdapter(&apdt), 
-		L"Faild to get a rendering Device for DirectX 11. Device is IDXGIAdapter( or Graphics Adapter)", return 0);
+		L"Faild to get a rendering Device for DirectX 11. Device is IDXGIAdapter( or Graphics Adapter)", return);
 
 	//else continue on, to get IDXGIFactory struct
 	DX11_ERROR(apdt->GetParent(__uuidof(struct IDXGIFactory), reinterpret_cast<void**>(&rs->factory)), 
-		L"Faild to get a rendering Device for DirectX 11. Device is IDXGIFactory", return 0);
+		L"Faild to get a rendering Device for DirectX 11. Device is IDXGIFactory", return);
 	//now create swapChain
 	DX11_createSwapChain(rs, reinterpret_cast<HWND>(hwnd));
 
@@ -108,27 +117,26 @@ void* DX11_init(void* hwnd, void* graphics)
 	};
 	//VERTEX SHADER
 	inputLayout.inputLayouts = formats;
-	void* vsCode = DX11_createVertexShader(rs, L"..\\..\\..\\Extensions\\Defualt\\VGraphics\\Shaders\\VSDefault.hlsl", "vsmain", &inputLayout);
+	void* vsCode = DX11_createVertexShader(rs, L"..\\..\\..\\Extensions\\Defualt\\VGraphics\\DX\\11\\Shaders\\VSDefault.hlsl", "vsmain", &inputLayout);
 	
 	NULL_ERROR(
 		vsCode, 
-		"Failed to set succesfully vertex shader for use. Your vertex Shader was null. Check your V_VertexShaderInfo struct", 
-		return 0
+		"Failed to set succesfully vertex shader for use. Your vertex Shader was null. Check your V_VertexShaderInfo struct and or ..\\..\\..\\Extensions\\Defualt\\VGraphics\\DX\\11\\Shaders\\VSDefault.hlsl file", 
+		return
 	);
 
 	DX11_setVertexShader(rs, vsCode);
 
 	//PIXEL SHADER
-	void* psCode = DX11_createFragmentShader(rs, L"..\\..\\..\\Extensions\\Defualt\\VGraphics\\Shaders\\PSDefault.hlsl", "psmain");
+	void* psCode = DX11_createFragmentShader(rs, L"..\\..\\..\\Extensions\\Defualt\\VGraphics\\DX\\11\\\\Shaders\\PSDefault.hlsl", "psmain");
 	
 	NULL_ERROR(
 		psCode, 
-		R"(Failed to set succesfully pixel shader for use. Your pixel Shader was null. Check your your ..\\..\\..\\Extensions\\Defualt\\VGraphics\\Shaders\\PSDefault.hlsl)", 
-		return 0
+		R"(Failed to set succesfully pixel shader for use. Your pixel Shader was null. Check your your ..\\..\\..\\Extensions\\Defualt\\VGraphics\\DX\\11\\\\Shaders\\PSDefault.hlsl file)", 
+		return
 	);
 
 	DX11_setFragmentShader(rs, psCode);
-	return rs;
 }
 
 __declspec(noinline) static
@@ -352,7 +360,7 @@ void DX11_setFragmentShader(void* rs, void* fs)
 	s->context->PSSetShader(outPixelShader, __nullptr, 0U);
 }
 __declspec(noinline) static
-void DX11_setMesh(void* rs, VE::Graphics::Resources::VMesh mesh)
+void DX11_drawMesh(void* rs, VE::Graphics::Resources::VMesh mesh)
 {
 	struct DX11RenderingDevs* s = reinterpret_cast<struct DX11RenderingDevs*>(rs);
 	//CREATE VERTEX BUFFER
@@ -381,26 +389,24 @@ void DX11_setMesh(void* rs, VE::Graphics::Resources::VMesh mesh)
 	//CREATE CONSTANT BUFFER
 	if (mesh.cbSize != 0U)
 	{
-
-			D3D11_BUFFER_DESC desc = { 0 };
-			//Size of the data 
-			desc.ByteWidth = mesh.cbSize;
-			//the resource will be read and wirten to by the GPU
-			desc.Usage = D3D11_USAGE_DEFAULT;
-			//Bind to Input l Assembly as a Vertex buffer
-			desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-			//0 for no CPU access is necessary
-			desc.CPUAccessFlags = 0U;
-			D3D11_SUBRESOURCE_DATA srd =
-			{
-				mesh.cb,
-				0U,
-				0U
-			};
-			ID3D11Buffer* constantBuffer = __nullptr;
-			DX11_ERROR(s->dev->CreateBuffer(&desc, &srd, &constantBuffer), "Failed to set succesfully index buffer for vertex shader. Check your V_VertexShaderInfo struct's cb and csSize data", return);
-			s->context->VSSetConstantBuffers(0U, 1U, &constantBuffer);
-		
+		D3D11_BUFFER_DESC desc = { 0 };
+		//Size of the data 
+		desc.ByteWidth = mesh.cbSize;
+		//the resource will be read and wirten to by the GPU
+		desc.Usage = D3D11_USAGE_DEFAULT;
+		//Bind to Input l Assembly as a Vertex buffer
+		desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		//0 for no CPU access is necessary
+		desc.CPUAccessFlags = 0U;
+		D3D11_SUBRESOURCE_DATA srd =
+		{
+			mesh.cb,
+			0U,
+			0U
+		};
+		ID3D11Buffer* constantBuffer = __nullptr;
+		DX11_ERROR(s->dev->CreateBuffer(&desc, &srd, &constantBuffer), "Failed to set succesfully index buffer for vertex shader. Check your V_VertexShaderInfo struct's cb and csSize data", return);
+		s->context->VSSetConstantBuffers(0U, 1U, &constantBuffer);	
 	};
 	//CREATE INDEX BUFFER
 	if (!mesh.indices.empty())

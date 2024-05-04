@@ -1,5 +1,5 @@
 #pragma once
-#include "req.h"
+#include <VGraphics/requirements.c>
 #include <vector>
 namespace VE 
 {
@@ -46,6 +46,26 @@ namespace VE
 				//size of the const buffer struct or class 
 				unsigned int cbSize
 			);
+		private:
+			//POINTERS TO LOW LEVEL API SPECIFIC WAYS OF CREATING GRAPHICS RESOURCES
+			//WARNING ANY MODIFICATION TO THE INTERFACE CAN LEAD TO MEMORY LEAKS
+			//________________________________________________________________
+			void*(*createVertexShader)(void* rs, const wchar_t* file_path, const char* entry_point, VE::Graphics::Resources::VInputLayout* inputLayout);
+			void*(*createFragmentShader)(void* rs, const wchar_t* file_path, const char* entry_point);
+			//pointer the the LOW LEVEL render system
+			void* renderSystem = nullptr;
+			//________________________________________________________________
+		public:
+			//will a create a Pixel/Fragment shader for the render system to use 
+			//@param file_path -> the destination of the Fragment/Pixel shader file
+			//@param entry_point -> the entry point function
+			void* CreateFragmentShader(const wchar_t* file_path, const char* entry_point);
+			//will a create a Vertex shader for the render system to use 
+			//@param file_path -> the destination of the Vertex shader file
+			//@param entry_point -> the entry point function
+			//@param inputLayout -> Custom Samantics YOU put in the shader. (nullptr if no custom Samantics)
+			void* CreateVertexShader(const wchar_t* file_path, const char* entry_point, VE::Graphics::Resources::VInputLayout* inputLayout);
+
 		};
 	};
 };

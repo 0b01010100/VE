@@ -12,9 +12,9 @@ target_link_libraries(Def PUBLIC MS)
 
 add_subdirectory(VGraphics)
 
-target_include_directories(MSGE PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
-target_link_libraries(Def PUBLIC MSGE)
-target_link_libraries(MSGE PUBLIC MS)
+target_include_directories(VGraphics PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+target_link_libraries(Def PUBLIC VGraphics)
+target_link_libraries(VGraphics PUBLIC MS)
 
 add_subdirectory(VInput)
 target_include_directories(VInput PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")

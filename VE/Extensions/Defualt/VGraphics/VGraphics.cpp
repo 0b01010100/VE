@@ -1,18 +1,16 @@
 #include "VGraphics.hpp"
-#include "VGraphics.hpp"
-#include <VGraphics/MSGraphicsManager/MSDX11.hpp>
-#include<stdio.h>
+#include <VGraphics/DX/11/public.c>
 
 VE::Graphics::VGraphics::VGraphics(void* WindowHandle, unsigned int RenderingApi)
 {
-	resourceManager = new VGraphicsResourceChief(); 
 	this->WindowHandle = WindowHandle;
 	this->RenderingApi = RenderingApi;
+	resourceManager = new VGraphicsResourceChief();
 	switch (RenderingApi)
 	{
 #ifdef _WIN32
 	case 0 : //VE::Window::VAPI::WINDOWS:
-			this->renderSystem = DX11_init(WindowHandle, this);
+			DX11_init(WindowHandle, this, resourceManager);
 			break;
 #endif
 	case  1: //VE::Window::VAPI::OGL:
@@ -24,12 +22,17 @@ VE::Graphics::VGraphics::VGraphics(void* WindowHandle, unsigned int RenderingApi
 		default:
 			break;
 	}
+
 	//check if phwnd in nullptr if so there was a problem creating the window
 	if (renderSystem == nullptr)
 	{
 		printf("VGraphics creation didn't go so well in File: %ls", __FILEW__);
 	}
-
+	else
+	{
+	
+	}
+	
 }
 VE::Graphics::VGraphics::~VGraphics()
 {
@@ -43,9 +46,9 @@ void VE::Graphics::VGraphics::SetVertexShader(void* vs)
 {
 	this->setVertexShader(this->renderSystem, vs);
 }
-void VE::Graphics::VGraphics::SetMesh(VE::Graphics::Resources::VMesh mesh)
+void VE::Graphics::VGraphics::DrawMesh(VE::Graphics::Resources::VMesh mesh)
 {
-	this->setMesh(this->renderSystem, mesh);
+	this->drawMesh(this->renderSystem, mesh);
 }
 void VE::Graphics::VGraphics::ClearScreenColor(float r, float g, float b, float a)
 {

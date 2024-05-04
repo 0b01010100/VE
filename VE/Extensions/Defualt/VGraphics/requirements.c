@@ -52,7 +52,7 @@ namespace VE
 				return (static_cast<unsigned int>(ls) <= rs);
 			}
 
-
+			//Helps get the shader to know the memory layout of each Vertex Samantic or Attribute
 			struct VInputLayout
 			{
 				//input layout
@@ -104,5 +104,6 @@ namespace VE
 				unsigned int id;
 			};
 		};
+		
 	};
 };

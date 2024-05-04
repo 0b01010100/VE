@@ -3,6 +3,7 @@
 #include <iostream>
 #include "Entity/ESqr.h"
 #include "Entity/EEntity.h"
+
 Game0::Game0()
 {
 	////INIT WINDOW
@@ -14,6 +15,7 @@ Game0::Game0()
 	//////INIT ENTITY
 	entity = new ESqr(this);
 
+	
 }
 
 void Game0::Update()

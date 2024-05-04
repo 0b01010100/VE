@@ -18,44 +18,50 @@ namespace VE
 			VGraphics(void* WindowHandle, unsigned int RenderingApi);
 			~VGraphics();
 			//will a set a Pixel/Fragment shader for the render system to use 
+			//@param fs -> Pointer to Fragment/Pixel shader 
 			void SetFragmentShader(void* fs);
 			//will a set a Vertex shader for the render system to use 
+			//@param vs -> Pointer to Vertex shader 
 			void SetVertexShader(void* vs);
 			//will clear the color of the texture to a given color
+			//@param r -> Red color channel
+			//@param g -> Green color channel
+			//@param b -> Blue color channel
+			//@param a -> Alpha color channel
 			void ClearScreenColor(float r, float g, float b, float a);
 			//will present what was draw on the render texture so we can see it 
 			void Present();
 			//will a set a Mesh the render system to use 
-			void SetMesh(VE::Graphics::Resources::VMesh mesh);
+			//@param mesh -> The Mesh to draw
+			void DrawMesh(VE::Graphics::Resources::VMesh mesh);
 			//will allows us to tell the DX11 how to renderer to render a mesh or shape
+			//@param topology -> The way to draw the Mesh
 			void SetPrimitiveTopology(VE::Graphics::Resources::V_Primitive_Topology topology);
+			//will return the a number that represents the current Api being used by this Graphics Engine
+			//@return unsigned int
 			unsigned int GetRenderingAPi() const noexcept;
 		private:
+			//POINTERS TO LOW LEVEL API SPECIFIC WAYS OF CREATING GRAPHICS RESOURCES
 			//WARNING ANY MODIFICATION TO THE INTERFACE CAN LEAD TO MEMORY LEAKS
 			//________________________________________________________________
-			//will a set a Pixel/Fragment shader for the render system to use 
-			void(*setFragmentShader)(void* rs, void* fs) = nullptr;
-			//will a set a Vertex shader for the render system to use 
-			void(*setVertexShader)(void* rs, void* vs) = nullptr;
-			//will clear the color of the texture to a given color
-			void(*clearScreenColor)(void* rs, float r, float g, float b, float a) = nullptr;
-			//will present what was draw on the render texture so we can see it 
-			void(*present)(void* rs) = nullptr;
-			//will a set a Mesh the render system to use 
-			void(*setMesh)(void* rs, VE::Graphics::Resources::VMesh mesh) = nullptr;
-			//allows us to tell the DX11 how to renderer to render a mesh or shape
-			void(*setTopology)(void* rs, VE::Graphics::Resources::V_Primitive_Topology topology) = nullptr;
+		
+			void(*setFragmentShader)(void* rs, void* fs);
+			void(*setVertexShader)(void* rs, void* vs);
+			void(*clearScreenColor)(void* rs, float r, float g, float b, float a);
+			void(*present)(void* rs);
+			void(*drawMesh)(void* rs, VE::Graphics::Resources::VMesh mesh);
+			void(*setTopology)(void* rs, VE::Graphics::Resources::V_Primitive_Topology topology);
+			//pointer the the LOW LEVEL render system
+			void* renderSystem;
 			//________________________________________________________________
-			
-			//window to render to
-			void * WindowHandle = nullptr;
-			//The rendering APi
-			unsigned int RenderingApi = 0;
-			//pointer the the render system
-			void* renderSystem = nullptr;
-			//these pointer functions will help us interract with rendering APIs 
 		public:
-			VGraphicsResourceChief* resourceManager = nullptr;
+			VGraphicsResourceChief* resourceManager;
+			
+		private:
+			//window to render to
+			void * WindowHandle;
+			//The rendering APi
+			unsigned int RenderingApi;		
 		};
 
 	};

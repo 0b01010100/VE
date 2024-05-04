@@ -1,4 +1,4 @@
-#include "req.h"
+#include <VGraphics/requirements.c>
 // filesystem standard header by MICROSOFT
 #include <filesystem>
 // filesystem standard header by MICROSOFT
@@ -85,7 +85,7 @@ __declspec(noinline) static void DX11_setFragmentShader(void* rs, void* fs);
 //allows us to tell the DX11 renderer to render a mesh or shape
 //@param rs -> a pointer to a DX11RenderingDevs which will be represented on a hight level as a render system (or rs)
 //@param mesh -> the mesh or shap to render
-__declspec(noinline) static void DX11_setMesh(void* rs, VE::Graphics::Resources::VMesh mesh);
+__declspec(noinline) static void DX11_drawMesh(void* rs, VE::Graphics::Resources::VMesh mesh);
 
 //allows us to tell the DX11 how to renderer to render a mesh or shape
 //@param rs -> a pointer to a DX11RenderingDevs which will be represented on a hight level as a render system (or rs)

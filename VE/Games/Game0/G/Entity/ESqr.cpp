@@ -2,10 +2,7 @@
 #include "../VGame0.h"
 ESqr::ESqr(class Game0 * game) : EEntity(game)
 {
-	#define arrayItemCount(array) sizeof(array) / sizeof(array[0]);
 
-	using namespace VE::Math::Primitives;
-	int sqrvertexCount = arrayItemCount(INDEXED_SQUARE);
 
 	Vmat4x4 mat;
 	transform.world.setIdentity();
@@ -16,7 +13,11 @@ ESqr::ESqr(class Game0 * game) : EEntity(game)
 	mat.setScale(.10f, 1.f, 1.f);	
 	mat.setPosition(-0.5f, 0.f, 0.f);
 	transform.world = transform.world * mat;
+
 	
+	using namespace VE::Math::Primitives;
+	#define arrayItemCount(array) sizeof(array) / sizeof(array[0]);
+	int sqrvertexCount = arrayItemCount(INDEXED_SQUARE);
 	this->Mesh0 = game->ge->resourceManager->createMesh(INDEXED_SQUARE, sizeof(Vvertex), sqrvertexCount, INDEXED_SQUARE_INDIES, 6, &transform, sizeof(transform));
 }
 
@@ -60,7 +61,9 @@ void ESqr::Update()
 	transform.proj = proj;
 	printf("%ws", transform.world.getPosition().__str__().c_str());
 
-	this->game->ge->SetMesh(Mesh0);
+	this->game->ge->SetPrimitiveTopology(Resources::V_Primitive_Topology_Triangle_List);
 
-	this->game->ge->SetPrimitiveTopology(Resources::V_Primitive_Topology_Point_List);
+	this->game->ge->DrawMesh(Mesh0);
+
+	
 }
