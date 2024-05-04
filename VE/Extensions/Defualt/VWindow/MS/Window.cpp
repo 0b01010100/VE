@@ -1,14 +1,42 @@
-#include "MSWinUser.h"
+#include "public.c"
+#include "private.cpp"
+
 //#define UNICODE
 #include <Windows.h>
 #include <sstream>
-//creates a Microsift specefic window
-static void* MSW_CreateWindow(const wchar_t* name, long SizeX, long SizeY);
-//update window
-__declspec(noinline) static  void MSW_UpdateWindow(void* hwnd);
-//Gets the client Size of the window
-__declspec(noinline) static void MSW_GetClientWindowRect(void* hwnd, long rect[4]);
-//Debugging only for MS window creation tool
+struct WindowData
+{
+    bool hasUserFocus;
+};
+
+LRESULT CALLBACK WindowEventHandler(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+{
+    switch (msg)
+    {
+    case WM_NCCREATE://case window creation
+    {
+        WindowData* data = new WindowData();
+        SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(data));
+        return DefWindowProc(hwnd, msg, wparam, lparam); 
+    }
+    case WM_SETFOCUS://case user focus is on window
+    {
+        WindowData* data = reinterpret_cast<WindowData*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
+        data->hasUserFocus = true;
+        break;
+    }
+    case WM_KILLFOCUS://case user focus is not on window
+    {
+        WindowData* data = reinterpret_cast<WindowData*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
+        data->hasUserFocus = false;
+        break;
+    }
+    default:
+        return DefWindowProc(hwnd, msg, wparam, lparam);
+        break;
+    }
+}
+
 #define MS_ERROR(error_type, ...) \
 { \
 	std::wstringstream stream = {}; \
@@ -22,12 +50,16 @@ struct IWindow
 {
     void(*updateWindow);
     void(*getClientWindowRect);
+    void(*hasUserFocus);
 };
+
 void* MSW_init(void* window, const wchar_t* name, long SizeX, long SizeY)
 {
+    //GIVE THE HIGH LEVEL INTERFACE THE LOW LEVEL FUNCTIONS 
     IWindow* wnd =  reinterpret_cast<IWindow*>(window);
     wnd->updateWindow = MSW_UpdateWindow;
     wnd->getClientWindowRect = MSW_GetClientWindowRect;
+    wnd->hasUserFocus = MSW_HasUserFocus;
     void* hwnd = MSW_CreateWindow(name, SizeX, SizeY);
     return hwnd;
 }
@@ -39,7 +71,7 @@ static void * MSW_CreateWindow(const wchar_t * name, long SizeX, long SizeY)
     //class name
     wc.lpszClassName = name;
     //event handler
-    wc.lpfnWndProc = DefWindowProcW;
+    wc.lpfnWndProc = WindowEventHandler;
     //id of the application
     wc.hInstance = GetModuleHandleW(0);
     //windows Cursor
@@ -55,7 +87,7 @@ static void * MSW_CreateWindow(const wchar_t * name, long SizeX, long SizeY)
 
     //if user typed in zero make the window Width the monitor screen width div by 2
     if (SizeX == 0) SizeX = screenWidth / 2;
-    //if user typed in zero make the window Height the monitor screen width div by 2
+    //if user typed in zero make the window Height the monitor screen height div by 2
     if (SizeY == 0) SizeY = screenHeight / 2;
 
     //adjust the window size based on the window style and desired client size
@@ -95,6 +127,7 @@ void MSW_UpdateWindow(void * hwnd)
     MSG msg = {};
     PeekMessageW(&msg, reinterpret_cast<HWND>( hwnd ), 0, 0, PM_REMOVE);
     DispatchMessageW(&msg);
+
 }
 __declspec(noinline) static
 void MSW_GetClientWindowRect(void* hwnd, long rect[4])
@@ -105,4 +138,10 @@ void MSW_GetClientWindowRect(void* hwnd, long rect[4])
     rect[1] = wr.top;
     rect[2] = wr.right;
     rect[3] = wr.bottom;
+}
+__declspec(noinline) static
+bool MSW_HasUserFocus(void* hwnd)
+{
+    WindowData* data = reinterpret_cast<WindowData*>(GetWindowLongPtr(reinterpret_cast<HWND>(hwnd), GWLP_USERDATA)); 
+    return data->hasUserFocus;
 }

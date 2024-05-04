@@ -8,13 +8,12 @@ add_library(Def STATIC
 add_subdirectory(VWindow)
 
 target_include_directories(Def PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
-target_link_libraries(Def PUBLIC MS)
+target_link_libraries(Def PUBLIC VWindow)
 
 add_subdirectory(VGraphics)
 
 target_include_directories(VGraphics PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_link_libraries(Def PUBLIC VGraphics)
-target_link_libraries(VGraphics PUBLIC MS)
 
 add_subdirectory(VInput)
 target_include_directories(VInput PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")

@@ -1,21 +1,20 @@
 #include "VWindow.hpp"
-#include "VWindow.hpp"
-#include "VWindow.hpp"
-#include <MSWindowManager/MSWinUser.h>
+#include <VWindow/VWindow.hpp>
+#include <VWindow/MS/public.c>
 #include <stdio.h>
 //a window that wiill encapsulate the complexity of window managment
-VE::Window::VWindow::VWindow(const wchar_t* Name, long SizeX, long SizeY, VAPI Api)
+VE::Window::VWindow::VWindow(const wchar_t* Name, long SizeX, long SizeY, VWAPI Api)
 {
 	this->RenderingApi = Api;
 	//selection of which api to use the create the window
 	switch (Api)
 	{
-		case VAPI::WINDOWS:
+	case VWAPI::MSw:
 			this->phwnd = MSW_init(this, Name, SizeX, SizeY);
 			break;
-		case VAPI::OGL:
+	case VWAPI::OGLw:
 			break;
-		case VAPI::VULKAN:
+	case VWAPI::VKw:
 			break;
 		default:
 			break;
@@ -39,13 +38,18 @@ VE::Window::VWRect VE::Window::VWindow::GetClientWindowRect()
 	return VWRect(rect[0],rect[1], rect[2], rect[3]);
 }
 
-unsigned int VE::Window::VWindow::GetRenderingApi() const noexcept
+unsigned int VE::Window::VWindow::GetWindowingApi() const noexcept
 {
-	return (unsigned int)this->RenderingApi;
+	return static_cast<unsigned int>(this->RenderingApi);
 }
 
 void* VE::Window::VWindow::GetWindowHandle() const noexcept
 {
 	return this->phwnd;
+}
+
+bool VE::Window::VWindow::HasUserFocus() const noexcept
+{
+	return this->hasUserFocus(this->phwnd);
 }
 

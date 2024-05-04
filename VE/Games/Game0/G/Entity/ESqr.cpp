@@ -26,22 +26,22 @@ void ESqr::Update()
 	Vmat4x4 temp;
 	temp.setIdentity();
 	//get user input 
-	if (game->ipt->isKey(VKeyCode::_A, VKeyState::Down))
+	if (game->ipt->isKey(VKeyCode::_A, VKeyState::Down) && game->wnd->HasUserFocus())
 	{
 		temp.arr[0][3] -= 0.02;
 
 	}
-	if (game->ipt->isKey(VKeyCode::_D, VKeyState::Down))
+	if (game->ipt->isKey(VKeyCode::_D, VKeyState::Down) && game->wnd->HasUserFocus())
 	{
 		temp.arr[0][3] += 0.02;
 
 	}
-	if (game->ipt->isKey(VKeyCode::_W, VKeyState::Down))
+	if (game->ipt->isKey(VKeyCode::_W, VKeyState::Down) && game->wnd->HasUserFocus())
 	{
 		temp.arr[1][3] += 0.02;
 
 	}
-	if (game->ipt->isKey(VKeyCode::_S, VKeyState::Down))
+	if (game->ipt->isKey(VKeyCode::_S, VKeyState::Down) && game->wnd->HasUserFocus())
 	{
 		temp.arr[1][3] -= 0.02;
 	}
@@ -59,7 +59,7 @@ void ESqr::Update()
 	transform.view = view;
 	transform.world = transform.world * temp;
 	transform.proj = proj;
-	printf("%ws", transform.world.getPosition().__str__().c_str());
+	//printf("%ws", transform.world.getPosition().__str__().c_str());
 
 	this->game->ge->SetPrimitiveTopology(Resources::V_Primitive_Topology_Triangle_List);
 
