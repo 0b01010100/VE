@@ -11,13 +11,13 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 # Include FetchContent
 include(FetchContent)
 
-# Download GLFW
+# Download SDL2
 FetchContent_Declare(
-  glfw
-  GIT_REPOSITORY https://github.com/glfw/glfw.git
-  GIT_TAG 3.3.8
+  SDL2
+  GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
+  GIT_TAG release-2.28.5
 )
-FetchContent_MakeAvailable(glfw)
+FetchContent_MakeAvailable(SDL2)
 
 # Download GLAD
 FetchContent_Declare(
@@ -28,18 +28,20 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(glad)
 
 # Recursively search for all .cpp source files in the "src" directory
-# and update the build if any of them change.
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS src/*.cpp)
 
-# Create the executable "OpenGLSetup" using the collected source files.
+# Create the executable "OpenGLSetup"
 add_executable(OpenGLSetup ${SOURCES})
 
 # Include directories
 target_include_directories(OpenGLSetup PRIVATE 
     ${CMAKE_CURRENT_SOURCE_DIR}/inc 
-    ${glfw_SOURCE_DIR}/include 
+    ${SDL2_SOURCE_DIR}/include 
     ${glad_SOURCE_DIR}/include
 )
 
+# Copy the shader folder and its content into the bin folder
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/Shaders DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+
 # Link libraries
-target_link_libraries(OpenGLSetup PRIVATE glfw glad)
+target_link_libraries(OpenGLSetup PRIVATE SDL2-static glad)

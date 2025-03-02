@@ -1,20 +1,19 @@
 #pragma once
-#include <GLFW/glfw3.h>
+#include <SDL2/SDL.h>
 #include <Prerequisities.h>
 
 class Window {
 private:
-    GLFWwindow* m_window;
+    SDL_Window* m_window;
+    SDL_GLContext m_glContext;
     struct {
         i32 width = 800;
         i32 height = 600;
     } m_size;
 
-    // Static callback functions
-    static void framebufferSizeCallback(GLFWwindow* window, i32 width, i32 height);
-    static void focusCallback(GLFWwindow* window, i32 focused);
-    static void scrollCallback(GLFWwindow* window, f64 xoffset, f64 yoffset);
-
+    // Static event handlers
+    static void handleEvent(const SDL_Event& event, Window* window);
+    bool m_shouldclose = false;
 public:
     // Constructor and destructor
     Window();
@@ -40,5 +39,5 @@ public:
     Rect getScreenSize() const;
     bool shouldClose() const;
     void pollEvents();
-    GLFWwindow* getHandle() const;
+    SDL_Window* getHandle() const;
 };

@@ -1,55 +1,91 @@
 #include <Window/Window.hpp>
 #include <stdexcept>
 
-void Window::framebufferSizeCallback(GLFWwindow* window, int width, int height) {
-    Window* win = static_cast<Window*>(glfwGetWindowUserPointer(window));
-    win->onSize(width, height);
+void Window::handleEvent(const SDL_Event& event, Window* window) {
+    switch (event.type) {
+        case SDL_WINDOWEVENT:
+            switch (event.window.event) {
+                case SDL_WINDOWEVENT_RESIZED:
+                    window->onSize(event.window.data1, event.window.data2);
+                    break;
+                case SDL_WINDOWEVENT_FOCUS_GAINED:
+                    window->onFocus();
+                    break;
+                case SDL_WINDOWEVENT_FOCUS_LOST:
+                    window->onKillFocus();
+                    break;
+            }
+            break;
+        case SDL_MOUSEWHEEL:
+            window->onMouseWheel(event.wheel.y);
+            break;
+        case SDL_QUIT:
+            window->onDestroy();
+            window->m_shouldclose = true;
+            break;
+    }
 }
 
-void Window::focusCallback(GLFWwindow* window, int focused) {
-    Window* win = static_cast<Window*>(glfwGetWindowUserPointer(window));
-    if (focused)
-        win->onFocus();
-    else
-        win->onKillFocus();
-}
-
-void Window::scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
-    Window* win = static_cast<Window*>(glfwGetWindowUserPointer(window));
-    win->onMouseWheel(static_cast<int>(yoffset));
-}
+#include <Window/Window.hpp>
+#include <stdexcept>
+#include <glad/glad.h>
 
 Window::Window() {
-    // GLFW Init
-    if (!glfwInit()) {
-        throw std::runtime_error("Failed to initialize GLFW");
+    // SDL Init
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+        throw std::runtime_error("Failed to initialize SDL");
     }
 
-    // Create window
-    m_window = glfwCreateWindow(m_size.width, m_size.height, 
-                              "GLFW Window", nullptr, nullptr);
+    // Set OpenGL attributes before window creation
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+
+    // Create SDL Window
+    m_window = SDL_CreateWindow("SDL2 Window", 
+                                SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
+                                m_size.width, m_size.height, 
+                                SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
     if (!m_window) {
-        glfwTerminate();
-        throw std::runtime_error("Failed to create window");
+        SDL_Quit();
+        throw std::runtime_error("Failed to create SDL window");
     }
 
-    // Set window user pointer to this instance
-    glfwSetWindowUserPointer(m_window, this);
+    // Create OpenGL context
+    m_glContext = SDL_GL_CreateContext(m_window);
+    if (!m_glContext) {
+        SDL_DestroyWindow(m_window);
+        SDL_Quit();
+        throw std::runtime_error("Failed to create OpenGL context");
+    }
 
-    // Set callbacks
-    glfwSetFramebufferSizeCallback(m_window, framebufferSizeCallback);
-    glfwSetWindowFocusCallback(m_window, focusCallback);
-    glfwSetScrollCallback(m_window, scrollCallback);
+    // Initialize GLAD
+    if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress)) {
+        SDL_GL_DeleteContext(m_glContext);
+        SDL_DestroyWindow(m_window);
+        SDL_Quit();
+        throw std::runtime_error("Failed to initialize GLAD");
+    }
 
-    // Make OpenGL context current
-    glfwMakeContextCurrent(m_window);
+    // Set up OpenGL viewport
+    int width, height;
+    SDL_GetWindowSize(m_window, &width, &height);
+    glViewport(0, 0, width, height);
+
+    // Enable depth testing
+    glEnable(GL_DEPTH_TEST);
 }
 
 Window::~Window() {
-    if (m_window) {
-        glfwDestroyWindow(m_window);
+    if (m_glContext) {
+        SDL_GL_DeleteContext(m_glContext);
     }
-    glfwTerminate();
+    if (m_window) {
+        SDL_DestroyWindow(m_window);
+    }
+    SDL_Quit();
 }
 
 void Window::onSize(int width, int height) {
@@ -67,23 +103,27 @@ void Window::onDestroy() {}
 
 Window::Rect Window::getClientSize() const {
     int width, height;
-    glfwGetFramebufferSize(m_window, &width, &height);
+    SDL_GetWindowSize(m_window, &width, &height);
     return {0, 0, width, height};
 }
 
 Window::Rect Window::getScreenSize() const {
-    const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-    return {0, 0, mode->width, mode->height};
+    SDL_DisplayMode mode;
+    SDL_GetCurrentDisplayMode(0, &mode);
+    return {0, 0, mode.w, mode.h};
 }
 
 bool Window::shouldClose() const {
-    return glfwWindowShouldClose(m_window);
+    return this->m_shouldclose;
 }
 
 void Window::pollEvents() {
-    glfwPollEvents();
+    SDL_Event event;
+    while (SDL_PollEvent(&event)) {
+        handleEvent(event, this);
+    }
 }
 
-GLFWwindow* Window::getHandle() const {
+SDL_Window* Window::getHandle() const {
     return m_window;
 }
