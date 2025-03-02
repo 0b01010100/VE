@@ -37,7 +37,6 @@ PixelShader::PixelShader(std::string_view shader_code, RenderSystem * system)
     }
 }
 
-// Check if a string looks like a file (low allocation)
 bool PixelShader::looksLikeFile(std::string_view str) {
     size_t dotPos = str.rfind('.');
     if (dotPos == std::string_view::npos) {

@@ -23,10 +23,21 @@ VertexBuffer *RenderSystem::createVertexBuffer(void *vertices, size_t vertex_siz
 UniformBuffer* RenderSystem::createUniformBuffer
 (
     void* buffer, 
-    unsigned int buffer_size
+    unsigned int buffer_size,
+    SaveType save_type
 )
 {
-    return new UniformBuffer(buffer, buffer_size, this);
+    return new UniformBuffer(buffer, buffer_size, save_type, this);
+}
+
+IndexBuffer* RenderSystem::createIndexBuffer
+(
+    void* indies, 
+    unsigned int index_size, 
+    unsigned int index_count
+)
+{
+    return new IndexBuffer(indies, index_size, index_count, this);
 }
 
 Pipeline *RenderSystem::getPipline() const

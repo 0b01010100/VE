@@ -17,7 +17,15 @@ public:
     UniformBuffer* createUniformBuffer
     (
         void* buffer, 
-        unsigned int buffer_size
+        unsigned int buffer_size,
+        SaveType save_type
+    );
+
+    IndexBuffer* createIndexBuffer
+    (
+        void* indies, 
+        unsigned int index_size, 
+        unsigned int index_count
     );
 
     Pipeline* getPipline() const;

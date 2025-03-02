@@ -9,9 +9,10 @@ private:
 public: 
     void BindVertexShader(VertexShader* vs);
     void BindPixelShader(PixelShader* ps);
-    void BindVUniform(UniformBuffer* ub);
-
+    void BindVUniform(UniformBuffer* ub, unsigned int bindingPoint);
     void BindVertexBuffer(VertexBuffer* vb);
+    void BindIndexBuffer(IndexBuffer* ib);
+    
     //void BindTexure(Texture * )
     void SetCullMode(CullMode mode);
     

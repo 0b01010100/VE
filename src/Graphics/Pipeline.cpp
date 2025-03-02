@@ -52,14 +52,12 @@ void Pipeline::BindPixelShader(PixelShader* ps)
     glUseProgram(m_ShaderProgram.spo);
 }
 
-void Pipeline::BindVUniform(UniformBuffer *ub)
+void Pipeline::BindVUniform(UniformBuffer *ub, unsigned int bindingPoint)
 {
     if (!ub)
         throw std::invalid_argument("Uniform buffer is null");
 
-    GLuint bindingPoint = 0; // Change this based on where you want to bind it
-
-    glBindBufferBase(GL_UNIFORM_BUFFER, bindingPoint, ub->GetBufferID());
+    glBindBufferBase(GL_UNIFORM_BUFFER, bindingPoint, ub->m_buffer_id);
 }
 
 
@@ -67,6 +65,11 @@ void Pipeline::BindVertexBuffer(VertexBuffer* vb)
 {
     glBindVertexArray(vb->m_vba);  // Bind the Vertex Array Object
     glBindBuffer(GL_ARRAY_BUFFER, vb->m_vbo);  // Bind the Vertex Buffer Object
+}
+
+void Pipeline::BindIndexBuffer(IndexBuffer* ib)
+{
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib->m_ebo);
 }
 
 Pipeline::~Pipeline()

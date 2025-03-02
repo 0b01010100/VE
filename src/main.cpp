@@ -7,7 +7,7 @@
 #include <vector>
 
 #ifdef main
-#undef main  // SDL redefines main, so we remove it to avoid conflicts
+#undef main
 #endif
 
 int main() 
@@ -18,11 +18,18 @@ int main()
 
     Console::Log(Console::INFO, "Setting up OpenGL resources...");
 
-    // Define vertex data
+    // Define vertex data for a rectangle
     std::vector<float> vertices = {
         -0.5f, -0.5f, 0.0f,  // Bottom left
          0.5f, -0.5f, 0.0f,  // Bottom right
-         0.0f,  0.5f, 0.0f   // Top
+         0.5f,  0.5f, 0.0f,  // Top right
+        -0.5f,  0.5f, 0.0f   // Top left
+    };
+
+    // Define indices for two triangles forming a rectangle
+    std::vector<unsigned> indices = {
+        0, 1, 2,  // triangle 1 
+        2, 3, 0   // triangle 2
     };
 
     // Create shaders
@@ -33,7 +40,7 @@ int main()
     graphics.getRenderSystem()->getPipline()->BindVertexShader(vertexShader);
     graphics.getRenderSystem()->getPipline()->BindPixelShader(pixelShader);
     
-    // Define vertex attributes
+    // Define vertex attributes (3D position)
     Attributes attribs = {
         { 0, 3, VG_FLOAT, false }
     };
@@ -42,12 +49,16 @@ int main()
     VertexBuffer* vertexBuffer = graphics.getRenderSystem()->createVertexBuffer(vertices.data(), sizeof(float) * 3, vertices.size(), attribs);
     graphics.getRenderSystem()->getPipline()->BindVertexBuffer(vertexBuffer);
 
-    Console::Log(Console::INFO, "OpenGL resources setup complete");
-    
-    float vec[2] = {-1,2};
-    UniformBuffer* uniformBuffer = graphics.getRenderSystem()->createUniformBuffer(&vec, sizeof(double));
-    graphics.getRenderSystem()->getPipline()->BindVUniform(uniformBuffer);
+    // Create index buffer
+    IndexBuffer* indexBuffer = graphics.getRenderSystem()->createIndexBuffer(indices.data(), sizeof(unsigned int), indices.size());
+    graphics.getRenderSystem()->getPipline()->BindIndexBuffer(indexBuffer);
 
+    Console::Log(Console::INFO, "OpenGL resources setup complete");
+
+    float vec[2] = {-1,2};
+    UniformBuffer* uniformBuffer = graphics.getRenderSystem()->createUniformBuffer(&vec, sizeof(vec), SaveType::STATIC);
+    graphics.getRenderSystem()->getPipline()->BindVUniform(uniformBuffer, 0);
+  
     // Main loop
     while (!wnd.shouldClose())
     {
@@ -59,24 +70,20 @@ int main()
         if (input.isKey(KeyCode::_D, KeyState::Down)) {
             vec[0] += 0.001;
             uniformBuffer->Update(&vec);
-            graphics.getRenderSystem()->getPipline()->BindVUniform(uniformBuffer);
         }
 
         if (input.isKey(KeyCode::_A, KeyState::Down)) {
             vec[0] -= 0.001;
             uniformBuffer->Update(&vec);
-            graphics.getRenderSystem()->getPipline()->BindVUniform(uniformBuffer);
         }
 
         // Clear the screen
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
          
-        // Render
-    
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        // Render using index buffer
+        glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, nullptr);
         
-
         // Swap buffers
         SDL_GL_SwapWindow(wnd.getHandle());
     }

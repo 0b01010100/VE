@@ -11,18 +11,9 @@
 // OpenGL
 #include <glad/glad.h>
 
-// Forward declarations
-
-class VertexShader;
-class PixelShader ;
-class VertexBuffer;
-class UniformBuffer;
-class RenderSystem;
-class Pipeline;
-
 // Enums/structs
 
-enum VGenum{
+enum VGenum {
     VG_UNSIGNED_BYTE  = 0x1401,
     VG_SHORT          = 0x1402,
     VG_UNSIGNED_SHORT = 0x1403,
@@ -38,8 +29,7 @@ enum CullMode {
     FrontAndBack  // Cull both front and back faces
 };
 
-enum SaveType
-{
+enum SaveType {
     STATIC,
     DYNAMIC
 };
@@ -48,7 +38,7 @@ enum SaveType
 struct Attribute {
     uint32_t index;      // Shader attribute location
     int32_t size;        // Number of components (e.g., 3 for vec3)
-    VGenum type;       // Data type (e.g., float)
+    VGenum type;         // Data type (e.g., float)
     bool normalized;     // Normalize fixed-point data
     uint32_t stride;     // Distance between consecutive attributes
     const void* offset;  // Offset within the buffer
@@ -68,11 +58,22 @@ static const char* default_ps =
 "    FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
 "}\n";
 
-//Vertex attributes dynamic arrary
+// Vertex attributes dynamic array
 using Attributes = std::vector<Attribute>;
+
+// Forward declarations
+
+class VertexShader;
+class IndexBuffer;
+class PixelShader;
+class VertexBuffer;
+class UniformBuffer;
+class RenderSystem;
+class Pipeline;
 
 // Our includes
 #include <Graphics/VertexShader.hpp>
+#include <Graphics/IndexBuffer.hpp>
 #include <Graphics/PixelShader.hpp>
 #include <Graphics/VertexBuffer.hpp>
 #include <Graphics/UniformBuffer.hpp>
