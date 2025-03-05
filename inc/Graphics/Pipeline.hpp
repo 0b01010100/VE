@@ -12,8 +12,8 @@ public:
     void BindVUniform(UniformBuffer* ub, unsigned int bindingPoint);
     void BindVertexBuffer(VertexBuffer* vb);
     void BindIndexBuffer(IndexBuffer* ib);
+    void BindTexture2D(Texture2D* tex, unsigned int unit);
     
-    //void BindTexure(Texture * )
     void SetCullMode(CullMode mode);
     
 private:

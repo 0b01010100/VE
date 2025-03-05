@@ -13,6 +13,13 @@
 
 // Enums/structs
 
+enum class VType 
+{
+    Normal,
+    RenderTarget,
+    DepthStencil
+};
+
 enum VGenum {
     VG_UNSIGNED_BYTE  = 0x1401,
     VG_SHORT          = 0x1402,
@@ -44,6 +51,10 @@ struct Attribute {
     const void* offset;  // Offset within the buffer
 };
 
+// Vertex attributes dynamic array
+using Attributes = std::vector<Attribute>;
+
+
 static const char* default_vs =
 "#version 330 core\n"
 "layout (location = 0) in vec3 aPos;\n"
@@ -58,8 +69,6 @@ static const char* default_ps =
 "    FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
 "}\n";
 
-// Vertex attributes dynamic array
-using Attributes = std::vector<Attribute>;
 
 // Forward declarations
 
@@ -68,6 +77,7 @@ class IndexBuffer;
 class PixelShader;
 class VertexBuffer;
 class UniformBuffer;
+class Texture2D;
 class RenderSystem;
 class Pipeline;
 
@@ -77,6 +87,7 @@ class Pipeline;
 #include <Graphics/PixelShader.hpp>
 #include <Graphics/VertexBuffer.hpp>
 #include <Graphics/UniformBuffer.hpp>
+#include <Graphics/Texture2D.hpp>
 #include <Graphics/RenderSystem.hpp>
 #include <Graphics/Pipeline.hpp>
 

@@ -72,6 +72,12 @@ void Pipeline::BindIndexBuffer(IndexBuffer* ib)
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib->m_ebo);
 }
 
+void Pipeline::BindTexture2D(Texture2D* tex, unsigned int unit)
+{
+    glActiveTexture(GL_TEXTURE0 + unit);
+    glBindTexture(GL_TEXTURE_2D, tex->m_texture);
+}
+
 Pipeline::~Pipeline()
 {
     glDeleteProgram(this->m_ShaderProgram.spo);

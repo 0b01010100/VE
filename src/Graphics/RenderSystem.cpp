@@ -40,6 +40,16 @@ IndexBuffer* RenderSystem::createIndexBuffer
     return new IndexBuffer(indies, index_size, index_count, this);
 }
 
+Texture2D *RenderSystem::createTexture(const std::string_view full_path)
+{
+    return new Texture2D(full_path);
+}
+
+Texture2D *RenderSystem::createTexture(int width, int height, VType type)
+{
+    return new Texture2D(width, height, type);
+}
+
 Pipeline *RenderSystem::getPipline() const
 {
     return this->m_pipeline;

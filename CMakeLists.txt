@@ -27,6 +27,14 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(glad)
 
+# Download stb (contains stb_image.h)
+FetchContent_Declare(
+  stb
+  GIT_REPOSITORY https://github.com/nothings/stb.git
+  GIT_TAG master
+)
+FetchContent_MakeAvailable(stb)
+
 # Recursively search for all .cpp source files in the "src" directory
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS src/*.cpp)
 
@@ -38,10 +46,12 @@ target_include_directories(OpenGLSetup PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/inc 
     ${SDL2_SOURCE_DIR}/include 
     ${glad_SOURCE_DIR}/include
+    ${stb_SOURCE_DIR}
 )
 
 # Copy the shader folder and its content into the bin folder
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/Shaders DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/Textures DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 
 # Link libraries
 target_link_libraries(OpenGLSetup PRIVATE SDL2-static glad)

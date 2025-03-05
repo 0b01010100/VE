@@ -27,6 +27,8 @@ public:
         unsigned int index_size, 
         unsigned int index_count
     );
+    Texture2D* createTexture(const std::string_view full_path);
+    Texture2D* createTexture(int width, int height, VType type);
 
     Pipeline* getPipline() const;
 private:

@@ -18,13 +18,15 @@ int main()
 
     Console::Log(Console::INFO, "Setting up OpenGL resources...");
 
-    // Define vertex data for a rectangle
-    std::vector<float> vertices = {
-        -0.5f, -0.5f, 0.0f,  // Bottom left
-         0.5f, -0.5f, 0.0f,  // Bottom right
-         0.5f,  0.5f, 0.0f,  // Top right
-        -0.5f,  0.5f, 0.0f   // Top left
-    };
+// Define vertex data for a rectangle with texture coordinates
+std::vector<float> vertices = {
+    // Positions         // Texture Coords
+    -0.5f, -0.5f, 0.0f,  0.0f, 0.0f, // Bottom left
+     0.5f, -0.5f, 0.0f,  1.0f, 0.0f, // Bottom right
+     0.5f,  0.5f, 0.0f,  1.0f, 1.0f, // Top right
+    -0.5f,  0.5f, 0.0f,  0.0f, 1.0f  // Top left
+};
+
 
     // Define indices for two triangles forming a rectangle
     std::vector<unsigned> indices = {
@@ -33,8 +35,8 @@ int main()
     };
 
     // Create shaders
-    VertexShader* vertexShader = graphics.getRenderSystem()->createVertexShader("Shaders\\shader.vs");
-    PixelShader* pixelShader = graphics.getRenderSystem()->createPixelShader(default_ps);
+    VertexShader* vertexShader = graphics.getRenderSystem()->createVertexShader("Shaders\\shader1.vs");
+    PixelShader* pixelShader = graphics.getRenderSystem()->createPixelShader("Shaders\\shader1.fs");
 
     // Initialize render system
     graphics.getRenderSystem()->getPipline()->BindVertexShader(vertexShader);
@@ -42,8 +44,10 @@ int main()
     
     // Define vertex attributes (3D position)
     Attributes attribs = {
-        { 0, 3, VG_FLOAT, false }
+        { 0, 3, VG_FLOAT, false }, // Position
+        { 1, 2, VG_FLOAT, false }  // Texture coordinates
     };
+    
 
     // Create vertex buffer
     VertexBuffer* vertexBuffer = graphics.getRenderSystem()->createVertexBuffer(vertices.data(), sizeof(float) * 3, vertices.size(), attribs);
@@ -58,7 +62,8 @@ int main()
     float vec[2] = {-1,2};
     UniformBuffer* uniformBuffer = graphics.getRenderSystem()->createUniformBuffer(&vec, sizeof(vec), SaveType::STATIC);
     graphics.getRenderSystem()->getPipline()->BindVUniform(uniformBuffer, 0);
-  
+    
+
     // Main loop
     while (!wnd.shouldClose())
     {
