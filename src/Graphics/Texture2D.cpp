@@ -2,9 +2,11 @@
 #include <Graphics/Texture2D.hpp>
 #include "stb_image.h"
 #include <iostream>
-// Texture2D Constructor: Loads and sets up an OpenGL texture
 
 Texture2D::Texture2D(const std::string_view full_path) {
+    // Enable vertical flip before loading the image
+    stbi_set_flip_vertically_on_load(true);
+
     // 1. Generate a texture object
     glGenTextures(1, &m_texture);
     
@@ -51,6 +53,9 @@ Texture2D::Texture2D(const std::string_view full_path) {
 
     // 9. Free the image data
     stbi_image_free(data);
+
+    // 10. Unbind the texture
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 Texture2D::Texture2D(int width, int height, VType type) 

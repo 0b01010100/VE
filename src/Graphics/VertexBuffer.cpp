@@ -1,13 +1,12 @@
 #include <Graphics/VertexBuffer.hpp>
 
-
 // VertexBuffer Constructor Implementation
 VertexBuffer::VertexBuffer(
-    void* vertices,       // Pointer to vertex data
-    size_t vertex_size,   // Size of each vertex
-    size_t vertex_count,  // Number of vertices
-    Attributes vertex_attribs, // Vertex attributes
-    RenderSystem* system  // Render system pointer
+    void* vertices,
+    size_t vertex_size,
+    size_t vertex_count,
+    Attributes vertex_attribs,
+    RenderSystem* system
 ) : m_system(system)
 {
     // 1. Create and Bind Vertex Array Object (VAO)
@@ -25,25 +24,18 @@ VertexBuffer::VertexBuffer(
         vertices,                   // Source data
         GL_STATIC_DRAW              // Usage hint
     );
-
-    // 4. Configure Vertex Attributes
-    size_t offset = 0;
+    
+    // 4. Set up vertex attributes based on the provided configuration
     for (const auto& attrib : vertex_attribs) {
-        // Enable the vertex attribute array
         glEnableVertexAttribArray(attrib.index);
-        
-        // Configure the vertex attribute pointer
         glVertexAttribPointer(
-            attrib.index,           // Attribute index
-            attrib.size,            // Number of components
-            static_cast<GLenum>(attrib.type), // Data type
-            attrib.normalized,      // Normalized flag
-            vertex_size,            // Stride between vertices
-            reinterpret_cast<void*>(offset) // Offset within the vertex
+            attrib.index,
+            attrib.size,
+            attrib.type,
+            attrib.normalized,
+            attrib.stride,
+            attrib.offset
         );
-
-        // Calculate offset for next attribute
-        offset += attrib.size * sizeof(float);
     }
 
     // 5. Unbind buffers to prevent accidental modification

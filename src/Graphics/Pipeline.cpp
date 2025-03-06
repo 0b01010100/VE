@@ -54,17 +54,13 @@ void Pipeline::BindPixelShader(PixelShader* ps)
 
 void Pipeline::BindVUniform(UniformBuffer *ub, unsigned int bindingPoint)
 {
-    if (!ub)
-        throw std::invalid_argument("Uniform buffer is null");
-
     glBindBufferBase(GL_UNIFORM_BUFFER, bindingPoint, ub->m_buffer_id);
 }
 
-
 void Pipeline::BindVertexBuffer(VertexBuffer* vb)
 {
-    glBindVertexArray(vb->m_vba);  // Bind the Vertex Array Object
-    glBindBuffer(GL_ARRAY_BUFFER, vb->m_vbo);  // Bind the Vertex Buffer Object
+    glBindVertexArray(vb->m_vba);
+    glBindBuffer(GL_ARRAY_BUFFER, vb->m_vbo);
 }
 
 void Pipeline::BindIndexBuffer(IndexBuffer* ib)

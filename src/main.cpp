@@ -18,14 +18,14 @@ int main()
 
     Console::Log(Console::INFO, "Setting up OpenGL resources...");
 
-// Define vertex data for a rectangle with texture coordinates
-std::vector<float> vertices = {
-    // Positions         // Texture Coords
-    -0.5f, -0.5f, 0.0f,  0.0f, 0.0f, // Bottom left
-     0.5f, -0.5f, 0.0f,  1.0f, 0.0f, // Bottom right
-     0.5f,  0.5f, 0.0f,  1.0f, 1.0f, // Top right
-    -0.5f,  0.5f, 0.0f,  0.0f, 1.0f  // Top left
-};
+    // Define vertex data for a rectangle with texture coordinates
+    std::vector<float> vertices = {
+        // Positions         // Texture Coords
+        -0.5f, -0.5f, 0.0f,  0.0f, 0.0f, // Bottom left
+        0.5f, -0.5f, 0.0f,  1.0f, 0.0f, // Bottom right
+        0.5f,  0.5f, 0.0f,  1.0f, 1.0f, // Top right
+        -0.5f,  0.5f, 0.0f,  0.0f, 1.0f  // Top left
+    };
 
 
     // Define indices for two triangles forming a rectangle
@@ -42,15 +42,20 @@ std::vector<float> vertices = {
     graphics.getRenderSystem()->getPipline()->BindVertexShader(vertexShader);
     graphics.getRenderSystem()->getPipline()->BindPixelShader(pixelShader);
     
-    // Define vertex attributes (3D position)
+    // Define vertex attributes with proper stride and offset
     Attributes attribs = {
-        { 0, 3, VG_FLOAT, false }, // Position
-        { 1, 2, VG_FLOAT, false }  // Texture coordinates
+        // index, size, type, normalized, stride, offset
+        { 0, 3, VG_FLOAT, false, sizeof(float) * 5, (const void*)0 },                  // Position (3 floats)
+        { 1, 2, VG_FLOAT, false, sizeof(float) * 5, (const void*)(sizeof(float) * 3) } // Texture coordinates (2 floats)
     };
-    
 
-    // Create vertex buffer
-    VertexBuffer* vertexBuffer = graphics.getRenderSystem()->createVertexBuffer(vertices.data(), sizeof(float) * 3, vertices.size(), attribs);
+    // Create vertex buffer with correct vertex size (5 floats per vertex)
+    VertexBuffer* vertexBuffer = graphics.getRenderSystem()->createVertexBuffer(
+        vertices.data(),
+        sizeof(float) * 5,  // Size of each vertex (3 position + 2 texture)
+        vertices.size() / 5, // Number of vertices (total floats / floats per vertex)
+        attribs
+    );
     graphics.getRenderSystem()->getPipline()->BindVertexBuffer(vertexBuffer);
 
     // Create index buffer
@@ -59,10 +64,13 @@ std::vector<float> vertices = {
 
     Console::Log(Console::INFO, "OpenGL resources setup complete");
 
-    float vec[2] = {-1,2};
+    float vec[2] = {0,0};
     UniformBuffer* uniformBuffer = graphics.getRenderSystem()->createUniformBuffer(&vec, sizeof(vec), SaveType::STATIC);
     graphics.getRenderSystem()->getPipline()->BindVUniform(uniformBuffer, 0);
     
+    Texture2D* texture = graphics.getRenderSystem()->createTexture("Textures/MyFirstImage.png");
+    graphics.getRenderSystem()->getPipline()->BindTexture2D(texture, 0);
+
 
     // Main loop
     while (!wnd.shouldClose())
@@ -79,6 +87,16 @@ std::vector<float> vertices = {
 
         if (input.isKey(KeyCode::_A, KeyState::Down)) {
             vec[0] -= 0.001;
+            uniformBuffer->Update(&vec);
+        }
+
+        if (input.isKey(KeyCode::_W, KeyState::Down)){
+            vec[1] += 0.001;
+            uniformBuffer->Update(&vec);
+        }
+
+        if (input.isKey(KeyCode::_S, KeyState::Down)){
+            vec[1] -= 0.001;
             uniformBuffer->Update(&vec);
         }
 
