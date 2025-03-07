@@ -13,7 +13,7 @@ public:
     void BindVertexBuffer(VertexBuffer* vb);
     void BindIndexBuffer(IndexBuffer* ib);
     void BindTexture2D(Texture2D* tex, unsigned int unit);
-    
+    void SetRenderMode(RenderMode mode);
     void SetCullMode(CullMode mode);
     
 private:

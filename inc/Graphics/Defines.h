@@ -29,6 +29,13 @@ enum VGenum {
     VG_FLOAT          = 0x1406
 };
 
+enum RenderMode
+{
+    SOLID,
+    WIRE,
+    POINT
+};
+
 enum CullMode {
     None,         // Disable face culling
     Front,        // Cull front faces

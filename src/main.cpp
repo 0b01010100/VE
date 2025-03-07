@@ -2,8 +2,6 @@
 #include <Input/Input.h>
 #include <Debug/Console.h>
 #include <Graphics/Graphics.hpp>
-#include <SDL.h>
-#include <glad/glad.h>
 #include <vector>
 
 #ifdef main
@@ -61,6 +59,7 @@ int main()
     // Create index buffer
     IndexBuffer* indexBuffer = graphics.getRenderSystem()->createIndexBuffer(indices.data(), sizeof(unsigned int), indices.size());
     graphics.getRenderSystem()->getPipline()->BindIndexBuffer(indexBuffer);
+    graphics.getRenderSystem()->getPipline()->SetRenderMode(WIRE);
 
     Console::Log(Console::INFO, "OpenGL resources setup complete");
 

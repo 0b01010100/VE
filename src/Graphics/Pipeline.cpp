@@ -79,6 +79,17 @@ Pipeline::~Pipeline()
     glDeleteProgram(this->m_ShaderProgram.spo);
 }
 
+void Pipeline::SetRenderMode(RenderMode mode)
+{
+    if (mode == 0) // Solid mode
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    else if (mode == 1) // Wireframe mode
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    else if (mode == 2) // Point mode
+        glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
+}
+
+
 void Pipeline::SetCullMode(CullMode mode)
 {
     if (mode == CullMode::None) {
