@@ -25,7 +25,6 @@ int main()
         -0.5f,  0.5f, 0.0f,  0.0f, 1.0f  // Top left
     };
 
-
     // Define indices for two triangles forming a rectangle
     std::vector<unsigned> indices = {
         0, 1, 2,  // triangle 1 
@@ -59,7 +58,7 @@ int main()
     // Create index buffer
     IndexBuffer* indexBuffer = graphics.getRenderSystem()->createIndexBuffer(indices.data(), sizeof(unsigned int), indices.size());
     graphics.getRenderSystem()->getPipline()->BindIndexBuffer(indexBuffer);
-    graphics.getRenderSystem()->getPipline()->SetRenderMode(WIRE);
+    //graphics.getRenderSystem()->getPipline()->SetRenderMode(WIRE);
 
     Console::Log(Console::INFO, "OpenGL resources setup complete");
 
@@ -69,7 +68,6 @@ int main()
     
     Texture2D* texture = graphics.getRenderSystem()->createTexture("Textures/MyFirstImage.png");
     graphics.getRenderSystem()->getPipline()->BindTexture2D(texture, 0);
-
 
     // Main loop
     while (!wnd.shouldClose())
@@ -100,12 +98,11 @@ int main()
         }
 
         // Clear the screen
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        graphics.getRenderSystem()->getPipline()->ClearRenderTargetColor(0,0,0,1);
          
         // Render using index buffer
-        glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, nullptr);
-        
+        graphics.getRenderSystem()->getPipline()->DrawIndexedList(indices.size(), 0, 0);
+
         // Swap buffers
         SDL_GL_SwapWindow(wnd.getHandle());
     }

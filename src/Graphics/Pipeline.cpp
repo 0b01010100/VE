@@ -6,10 +6,6 @@ Pipeline::Pipeline(){
 
 void Pipeline::BindVertexShader(VertexShader* vs)
 {
-    if (!vs) {
-        throw std::invalid_argument("Null vertex shader provided");
-    }
-
     if (m_ShaderProgram.vs) {
         glDetachShader(m_ShaderProgram.spo, m_ShaderProgram.vs);
     }
@@ -18,22 +14,11 @@ void Pipeline::BindVertexShader(VertexShader* vs)
     glAttachShader(m_ShaderProgram.spo, vs->m_shader);
     glLinkProgram(m_ShaderProgram.spo);
     
-    GLint success;
-    glGetProgramiv(m_ShaderProgram.spo, GL_LINK_STATUS, &success);
-    if (!success) {
-        GLchar infoLog[512];
-        glGetProgramInfoLog(m_ShaderProgram.spo, 512, NULL, infoLog);
-        throw std::runtime_error("Shader program linking failed: " + std::string(infoLog));
-    }
     glUseProgram(m_ShaderProgram.spo);
 }
 
 void Pipeline::BindPixelShader(PixelShader* ps)
 {
-    if (!ps) {
-        throw std::invalid_argument("Null pixel shader provided");
-    }
-
     if (m_ShaderProgram.ps) {
         glDetachShader(m_ShaderProgram.spo, m_ShaderProgram.ps);
     }
@@ -42,13 +27,7 @@ void Pipeline::BindPixelShader(PixelShader* ps)
     glAttachShader(m_ShaderProgram.spo, ps->m_shader);
     glLinkProgram(m_ShaderProgram.spo);
     
-    GLint success;
-    glGetProgramiv(m_ShaderProgram.spo, GL_LINK_STATUS, &success);
-    if (!success) {
-        GLchar infoLog[512];
-        glGetProgramInfoLog(m_ShaderProgram.spo, 512, NULL, infoLog);
-        throw std::runtime_error("Shader program linking failed: " + std::string(infoLog));
-    }
+
     glUseProgram(m_ShaderProgram.spo);
 }
 
@@ -112,4 +91,25 @@ void Pipeline::SetCullMode(CullMode mode)
         default:
             break;
     }
+}
+
+void Pipeline::ClearRenderTargetColor(float red, float green, float blue, float alpha){
+    glClearColor(red, green, blue, alpha);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+void Pipeline::SetViewportSize(int width, int height){
+    glViewport(0, 0, width, height);
+}
+
+void Pipeline::DrawTrianlgeList(int vertex_count, int start_vertex_index){
+    glDrawArrays(GL_TRIANGLES, start_vertex_index, vertex_count);
+}
+
+void Pipeline::DrawIndexedList(int index_count, int start_vertex_index, int start_index_location){
+    glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, (void*)(start_index_location * sizeof(GLuint)));
+}
+
+void Pipeline::DrawTrianlgeStrip(int vertex_count, int start_vertex_index){
+    glDrawArrays(GL_TRIANGLE_STRIP, start_vertex_index, vertex_count);
 }
