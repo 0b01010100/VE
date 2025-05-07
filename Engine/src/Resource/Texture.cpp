@@ -4,6 +4,7 @@
 #include <Graphics/GraphicsEngine.hpp>
 #include <Graphics/RenderSystem.hpp>
 #include <Graphics/Texture2D.hpp>
+#include <filesystem>
 
 Texture::Texture(std::string_view full_path, ResourceManager* manager) : Resource(full_path, manager)
 {

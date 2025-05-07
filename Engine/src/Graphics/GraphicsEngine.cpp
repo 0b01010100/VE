@@ -24,18 +24,23 @@
 #include <Entity/Entity.hpp>
 #include <Math/Rect.hpp>
 
+#include <Input/InputSystem.hpp>
+#include <glad/glad.h>
+
 struct alignas(16) LightData
 {
 	Vector4D color;
 	Vector4D direction;
 };
+
 struct alignas(16) TerrainData
 {
 	Vector4D size;
 	f32 heightMapSize = 0.0f;// the number of texels along one edge of the height map
+	f32 _padding[3]; // padding to complete 16-byte alignment
 };
 
-struct alignas(16) ConstantData
+struct alignas(16) UniformData
 {
 	Matrix4x4 world;
 	Matrix4x4 view;
@@ -46,6 +51,121 @@ struct alignas(16) ConstantData
 };
 
 
+// Simple 4x4 matrix implementation
+struct Mat4 {
+    float m[16];
+    
+    Mat4() {
+        // Initialize to identity matrix
+        for (int i = 0; i < 16; i++) {
+            m[i] = 0.0f;
+        }
+        m[0] = m[5] = m[10] = m[15] = 1.0f;
+    }
+    
+    void setIdentity() {
+        for (int i = 0; i < 16; i++) {
+            m[i] = 0.0f;
+        }
+        m[0] = m[5] = m[10] = m[15] = 1.0f;
+    }
+    
+    // Matrix multiplication - column-major order
+    Mat4 operator*(const Mat4& other) const {
+        Mat4 result;
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                result.m[j*4+i] = 0.0f;
+                for (int k = 0; k < 4; k++) {
+                    result.m[j*4+i] += m[k*4+i] * other.m[j*4+k];
+                }
+            }
+        }
+        return result;
+    }
+};
+
+// Create translation matrix
+Mat4 translate(float x, float y, float z) {
+    Mat4 result;
+    result.m[12] = x;
+    result.m[13] = y;
+    result.m[14] = z;
+    return result;
+}
+
+// Create scaling matrix
+Mat4 scale(float x, float y, float z) {
+    Mat4 result;
+    result.m[0] = x;
+    result.m[5] = y;
+    result.m[10] = z;
+    return result;
+}
+
+// Create rotation matrix around X axis
+Mat4 rotateX(float angle) {
+    Mat4 result;
+    float c = cos(angle);
+    float s = sin(angle);
+    result.m[5] = c;
+    result.m[6] = s;
+    result.m[9] = -s;
+    result.m[10] = c;
+    return result;
+}
+
+// Create rotation matrix around Y axis
+Mat4 rotateY(float angle) {
+    Mat4 result;
+    float c = cos(angle);
+    float s = sin(angle);
+    result.m[0] = c;
+    result.m[2] = -s;
+    result.m[8] = s;
+    result.m[10] = c;
+    return result;
+}
+
+// Create rotation matrix around Z axis
+Mat4 rotateZ(float angle) {
+    Mat4 result;
+    float c = cos(angle);
+    float s = sin(angle);
+    result.m[0] = c;
+    result.m[1] = s;
+    result.m[4] = -s;
+    result.m[5] = c;
+    return result;
+}
+
+// Create perspective projection matrix
+Mat4 perspective(float fov, float aspect, float near, float far) {
+    Mat4 result;
+    float f = 1.0f / tan(fov / 2.0f);
+    
+    result.m[0] = f / aspect;
+    result.m[5] = f;
+    result.m[10] = (far + near) / (near - far);
+    result.m[11] = -1.0f;
+    result.m[14] = (2.0f * far * near) / (near - far);
+    result.m[15] = 0.0f;
+    
+    return result;
+}
+
+// Print matrix (for debugging)
+void printMatrix(const Mat4& matrix) {
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            std::cout << matrix.m[i * 4 + j] << " ";
+        }
+        std::cout << std::endl;
+    }
+    std::cout << std::endl;
+}
+
+
 GraphicsEngine::GraphicsEngine ( Game* game ) : m_game ( game )
 {
 	this->m_render_system = new RenderSystem();
@@ -54,95 +174,102 @@ GraphicsEngine::GraphicsEngine ( Game* game ) : m_game ( game )
 	display->m_swapChain = this->m_render_system->createSwapChain 
 	( 
 		display->getHandle(), 
-		screen_size.width, screen_size.height 
+		screen_size.width, 
+		screen_size.height 
 	);
 }
 
 void GraphicsEngine::update ( )
 {
-	auto swapChain = m_game->m_display->m_swapChain;
-
 	auto context = m_render_system->getImmediateDeviceContext ( );
+
+	glEnable(GL_DEPTH_TEST);
+
+	auto swapChain = m_game->m_display->m_swapChain;
 
 	context->clearRenderTargetColor ( swapChain, 0, 0, 0, 1 );
 	auto winSize = m_game->m_display->getClientSize ( );
 	context->setViewportSize ( winSize.width, winSize.height );
 
-
-	ConstantData constData = {};
+	
+	UniformData uniformData = {};
 
 	for (auto c : m_cameras)
 	{
 		auto t = c->getEntity ( )->getTransform ( );
-		constData.cameraPosition = t->getPosition ( );
+		uniformData.cameraPosition = t->getPosition ( );
 		c->setScreenArea ( winSize );
-		c->getViewMatrix ( constData.view );
-		c->getProjectionMatrix ( constData.proj );
+		c->getViewMatrix ( uniformData.view );
+		c->getProjectionMatrix ( uniformData.proj );
 	}
 
-
-	for (auto l : m_lights)
-	{
-		auto t = l->getEntity ( )->getTransform ( );
-		Matrix4x4 w;
-		t->getWorldMatrix ( w );
-		constData.light.direction = w.getZDirection ( );
-		constData.light.color = l->getColor ( );
-	}
-
-	for (auto t : m_terrains) 
-	{
-		auto transform = t->getEntity ( )->getTransform ( );
-		transform->getWorldMatrix ( constData.world );
-		constData.terrain.size = t->getSize ( );
-		constData.terrain.heightMapSize = t->getHeightMap ( )->getTexture ( )->getSize().width;
-
-		context->setVertexBuffer ( t->m_meshVb );
-		context->setIndexBuffer ( t->m_meshIb );
-
-		m_render_system->getImmediateDeviceContext()->setCullMode ( CullMode::Back );
-		t->updateData ( &constData, sizeof ( constData ) );
-		context->setUniformBuffer( t->m_cb, 0);
-
-		context->setVertexShader ( t->m_vertexShader );
-		context->setPixelShader ( t->m_pixelShader );
-
-		Texture2DPtr terrainTexture[3];
-		terrainTexture[0] = t->getHeightMap ( )->getTexture ( );
-		terrainTexture[1] = t->getGroundMap ( )->getTexture ( );
-		terrainTexture[2] = t->getCliffMap ( )->getTexture ( );
-
-		context->setTexture ( terrainTexture, 3 );
-
-		context->drawIndexedTriangleList ( (ui32)t->m_meshIb->getSizeIndexList(), 0, 0);
-	}
-
+    // Use our shader program - already binded
 	for (auto m : m_meshes)
 	{
 		auto transform = m->getEntity ( )->getTransform ( );
-		transform->getWorldMatrix ( constData.world );
-
-		auto mesh = m->getMesh ( ).get ( );
-		const auto materials = m->getMaterials ( );
-
-
+		transform->getWorldMatrix ( uniformData.world );
+		
+		auto mesh = m->getMesh ();
+		
 		context->setVertexBuffer ( mesh->m_vertex_buffer );
 		context->setIndexBuffer ( mesh->m_index_buffer );
-
+		
+		const auto materials = m->getMaterials ( );
 
 		for (auto i = 0; i < mesh->getNumMaterialSlots ( ); i++)
 		{
 			if (i >= materials.size ( )) break;
 			auto mat = materials[i].get ( );
 
-			m_render_system->getImmediateDeviceContext()->setCullMode ( mat->getCullMode ( ) );
+			context->setCullMode ( mat->getCullMode ( ) );
+			context->setAttributes( mesh->m_attributes );
+			
+			// uniformData.proj.transpose();
+			// uniformData.view.transpose();
+			// uniformData.world.transpose();
 
-			mat->setData ( &constData, sizeof ( ConstantData ) );
-			context->setUniformBuffer ( mat->m_constant_buffer, 0 );
+			//mat->setData ( &uniformData, sizeof ( UniformData ) );
+			//context->setUniformBuffer ( mat->m_constant_buffer, 0);
+
+// Define scaling factors
+float scaleX = 2.0f;  // Scale 2x on X axis
+float scaleY = 2.0f;  // No change on Y axis
+float scaleZ = 2.0f;  // Half size on Z axis
+
+// Create scaling matrix
+Mat4 scaleMatrix = scale(scaleX, scaleY, scaleZ);
+
+if(this->m_game->getInputSystem()->isKeyDown(Key::W)){
+	x += 0.01;
+}
+
+// Create translation matrix (moving back 3 units)
+Mat4 translateMatrix = translate(0.0f, 0.0f, 0);
+//x = 0;
+// Apply transformations in order: first scale, then translate
+Mat4 modelMatrix = translateMatrix * scaleMatrix;
+
+// Apply projection
+Mat4 proj = perspective(1.3f, this->m_game->m_display->m_size.width / this->m_game->m_display->m_size.height, 0.01f, 100.0f);
+
+// Combine everything
+Mat4 transform = proj * modelMatrix;
+
+
 
 			context->setVertexShader ( mat->m_vertex_shader );
 			context->setPixelShader ( mat->m_pixel_shader );
 
+			GLuint transformLoc = glGetUniformLocation(this->getRenderSystem()->m_imm_device_context->m_ShaderProgram.spo, "transform");
+
+
+			//context->setUniformBuffer(mat->m_constant_buffer, 0);
+    		if (transformLoc == -1) {
+       	 		std::cerr << "Could not find uniform location for 'transform'" << std::endl;
+    		}
+
+			
+			glUniformMatrix4fv(transformLoc, 1, GL_FALSE, transform.m);
 			context->setTexture ( &mat->m_vec_textures[0], (unsigned int)mat->m_vec_textures.size ( ) );
 
 			auto slot = mesh->getMaterialSlot ( i );
@@ -150,7 +277,7 @@ void GraphicsEngine::update ( )
 		}
 	}
 
-	swapChain->present ( true );
+    this->m_game->m_display->m_swapChain->present(true);
 }
 
 RenderSystem* GraphicsEngine::getRenderSystem ( )

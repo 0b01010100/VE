@@ -89,6 +89,9 @@
         "variant": "cpp",
         "xtree": "cpp",
         "*.inc": "cpp",
-        "xhash": "cpp"
+        "xhash": "cpp",
+        "*.def": "cpp",
+        "coroutine": "cpp",
+        "queue": "cpp"
     }
 }

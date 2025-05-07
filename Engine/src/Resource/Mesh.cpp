@@ -5,8 +5,10 @@
 #include <Game/Game.hpp>
 #include <Graphics/GraphicsEngine.hpp>
 #include <Graphics/RenderSystem.hpp>
+#include <unordered_map>
+#include <filesystem>
 
-Mesh::Mesh(std::string_view full_path, ResourceManager* manager) : Resource(full_path, manager)
+Mesh::Mesh(std::string_view full_path, ResourceManager* manager ) : Resource(full_path, manager)
 {
 	tinyobj::attrib_t attribs;
 	std::vector<tinyobj::shape_t> shapes;
@@ -22,9 +24,10 @@ Mesh::Mesh(std::string_view full_path, ResourceManager* manager) : Resource(full
 
 	bool res = tinyobj::LoadObj(&attribs, &shapes, &materials, &warn, &err, inputfile.c_str(), mtldir.c_str());
 
-	if (!err.empty()) throw std::runtime_error("Mesh not created successfully");
+	if (!err.empty()) throw ("Mesh not created successfully");
 
-	if (!res) throw std::runtime_error("Mesh not created successfully");
+	if (!res) throw ("Mesh not created successfully");
+
 
 	std::vector<VertexMesh> list_vertices;
 	std::vector<unsigned int> list_indices;
@@ -37,8 +40,11 @@ Mesh::Mesh(std::string_view full_path, ResourceManager* manager) : Resource(full
 		vertex_buffer_size += shapes[s].mesh.indices.size();
 	}
 
+
 	list_vertices.reserve(vertex_buffer_size);
 	list_indices.reserve(vertex_buffer_size);
+
+
 	m_mat_slots.resize(materials.size());
 
 	size_t index_global_offset = 0;
@@ -91,6 +97,7 @@ Mesh::Mesh(std::string_view full_path, ResourceManager* manager) : Resource(full
 					texcoords_face[0], texcoords_face[1], texcoords_face[2],
 					tangent, binormal);
 
+
 				for (unsigned char v = 0; v < num_face_verts; v++)
 				{
 					tinyobj::index_t index = shapes[s].mesh.indices[index_offset + v];
@@ -118,10 +125,17 @@ Mesh::Mesh(std::string_view full_path, ResourceManager* manager) : Resource(full
 					}
 
 					Vector3D v_tangent, v_binormal;
-					v_binormal = Vector3D::cross(Vector3D(nx, ny, nz), tangent);
-					v_tangent = Vector3D::cross(v_binormal, Vector3D(nx, ny, nz));
+					v_binormal = Vector3D::cross(tangent,Vector3D(nx, ny, nz));
+					v_tangent = Vector3D::cross(v_binormal,Vector3D(nx, ny, nz));
 
-					VertexMesh vertex(Vector3D(vx, vy, vz), Vector2D(tx, ty), Vector3D(nx, ny, nz), v_tangent, v_binormal);
+					VertexMesh vertex
+					(
+						Vector3D(vx, vy, vz), 
+						Vector2D(tx, ty), 
+						Vector3D(nx, ny, nz), 
+						v_tangent, 
+						v_binormal
+					);
 					list_vertices.push_back(vertex);
 
 					list_indices.push_back((unsigned int)index_global_offset + v);
@@ -135,9 +149,9 @@ Mesh::Mesh(std::string_view full_path, ResourceManager* manager) : Resource(full
 		m_mat_slots[m].num_indices = index_global_offset - m_mat_slots[m].start_index;
 	}
 
-	auto rsys = m_manager->getGame()->getGraphicsEngine()->getRenderSystem();
+	auto rsys = m_manager->getGame ( )->getGraphicsEngine ( )->getRenderSystem ( );
 
-	Attributes attributes = 
+    this->m_attributes = 
 	{
 		{ 0, 3, VFLOAT, false, sizeof(VertexMesh), (const void*)offsetof(VertexMesh, m_position) },  // POSITION
 		{ 1, 2, VFLOAT, false, sizeof(VertexMesh), (const void*)offsetof(VertexMesh, m_texcoord) }, // TEXCOORD
@@ -145,23 +159,21 @@ Mesh::Mesh(std::string_view full_path, ResourceManager* manager) : Resource(full
 		{ 3, 3, VFLOAT, false, sizeof(VertexMesh), (const void*)offsetof(VertexMesh, m_tangent) },  // TANGENT
 		{ 4, 3, VFLOAT, false, sizeof(VertexMesh), (const void*)offsetof(VertexMesh, m_binormal) }  // BINORMAL
 	};
-	
+
 	m_vertex_buffer = rsys->createVertexBuffer
 	(
 		&list_vertices[0], 
 		sizeof(VertexMesh),
-		(int)list_vertices.size(),
-		attributes
+		(ui32)list_vertices.size(), 
+		this->m_attributes
 	);
-	if (list_indices.size() != 0)
-	{
-		m_index_buffer = rsys->createIndexBuffer
-		(
-			&list_indices[0], 
-			sizeof(unsigned int), 
-			(int)list_indices.size()
-		);
-	}
+
+	m_index_buffer = rsys->createIndexBuffer
+	(
+		&list_indices[0], 
+		sizeof(unsigned int), 
+		(ui32)list_indices.size()
+	);
 }
 
 Mesh::Mesh ( 
@@ -171,9 +183,9 @@ Mesh::Mesh (
 	ResourceManager* manager
 ) : Resource( "", manager )
 {
-	auto rsys = m_manager->getGame()->getGraphicsEngine()->getRenderSystem();
+	auto rsys = m_manager->getGame ( )->getGraphicsEngine ( )->getRenderSystem ( );
 
-	this->m_attributes = 
+    this->m_attributes = 
 	{
 		{ 0, 3, VFLOAT, false, sizeof(VertexMesh), (const void*)offsetof(VertexMesh, m_position) },  // POSITION
 		{ 1, 2, VFLOAT, false, sizeof(VertexMesh), (const void*)offsetof(VertexMesh, m_texcoord) }, // TEXCOORD
@@ -182,31 +194,18 @@ Mesh::Mesh (
 		{ 4, 3, VFLOAT, false, sizeof(VertexMesh), (const void*)offsetof(VertexMesh, m_binormal) }  // BINORMAL
 	};
 
-	m_vertex_buffer = rsys->createVertexBuffer
-	(
-		vertex_list_data,
+	m_vertex_buffer = rsys->createVertexBuffer ( vertex_list_data,
 		sizeof ( VertexMesh ),
-		(int)vertex_list_size, 
-		this->m_attributes
-	);
-	m_index_buffer = rsys->createIndexBuffer
-	(
-		index_list_data, 
-		sizeof(unsigned int),
-		(int)index_list_size
-	);
+		(ui32)vertex_list_size, this->m_attributes);
+	m_index_buffer = rsys->createIndexBuffer ( index_list_data, sizeof(unsigned int),
+		(ui32)index_list_size );
 
-	m_mat_slots.resize(material_slot_list_size);
+	m_mat_slots.resize ( material_slot_list_size );
 
 	for (unsigned int i = 0; i < material_slot_list_size; i++) 
 	{
 		m_mat_slots[i] = material_slot_list[i];
 	}
-}
-
-
-Mesh::~Mesh()
-{
 }
 
 MaterialSlot Mesh::getMaterialSlot(unsigned int slot)
@@ -219,7 +218,8 @@ size_t Mesh::getNumMaterialSlots()
 	return m_mat_slots.size();
 }
 
-void Mesh::computeTangents(const Vector3D& v0,
+void Mesh::computeTangents(
+    const Vector3D& v0,
 	const Vector3D& v1,
 	const Vector3D& v2,
 	const Vector2D& t0,
@@ -239,4 +239,10 @@ void Mesh::computeTangents(const Vector3D& v0,
 	tangent = Vector3D::normalize(tangent);
 	binormal = (deltaPos2 * deltaUV1.x - deltaPos1 * deltaUV2.x);
 	binormal = Vector3D::normalize(binormal);
+}
+
+
+
+Mesh::~Mesh()
+{
 }

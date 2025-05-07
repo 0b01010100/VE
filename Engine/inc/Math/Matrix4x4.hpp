@@ -1,189 +1,215 @@
 #pragma once
 #include <memory>
-#include <Math/Vector3D.hpp>
-#include <Math/Vector4D.hpp>
+#include "Vector3D.hpp"
+#include "Vector4D.hpp"
+#include <cstring>
+#include <cmath>
+
 class Matrix4x4
 {
 public:
-	Matrix4x4()
-	{
-		m_mat[0][0] = 1;
-		m_mat[1] [1] = 1;
-		m_mat[2][2] = 1;
-		m_mat[3][3] = 1;
-	}
+    // Constructor - initializes identity matrix
+    Matrix4x4()
+    {
+        setIdentity();
+    }
 
-	void setIdentity()
-	{
-        *this = Matrix4x4();
-		m_mat[0][0] = 1;
-		m_mat[1][1] = 1;
-		m_mat[2][2] = 1;
-		m_mat[3][3] = 1;
-	}
+    // Set matrix to identity
+    void setIdentity()
+    {
+        std::memset(m_mat, 0, sizeof(float) * 16);
+        m_mat[0] = 1.0f;  // [0][0]
+        m_mat[5] = 1.0f;  // [1][1]
+        m_mat[10] = 1.0f; // [2][2]
+        m_mat[15] = 1.0f; // [3][3]
+    }
 
-	void setTranslation(const Vector3D& translation)
-	{
-		m_mat[3][0] = translation.x;
-		m_mat[3][1] = translation.y;
-		m_mat[3][2] = translation.z;
-	}
+    // Set translation component
+    void setTranslation(const Vector3D& translation)
+    {
+        m_mat[12] = translation.x; // [3][0]
+        m_mat[13] = translation.y; // [3][1]
+        m_mat[14] = translation.z; // [3][2]
+    }
 
-	void setScale(const Vector3D& scale)
-	{
-		m_mat[0][0] = scale.x;
-		m_mat[1][1] = scale.y;
-		m_mat[2][2] = scale.z;
-	}
+    // Set scale component
+    void setScale(const Vector3D& scale)
+    {
+        m_mat[0] = scale.x;  // [0][0]
+        m_mat[5] = scale.y;  // [1][1]
+        m_mat[10] = scale.z; // [2][2]
+    }
 
-	void setRotationX(float x)
-	{
-		m_mat[1][1] = cos(x);
-		m_mat[1][2] = sin(x);
-		m_mat[2][1] = -sin(x);
-		m_mat[2][2] = cos(x);
-	}
+    // Set rotation around X axis
+    void setRotationX(float x)
+    {
+        m_mat[5] = std::cos(x);   // [1][1]
+        m_mat[6] = std::sin(x);   // [1][2]
+        m_mat[9] = -std::sin(x);  // [2][1]
+        m_mat[10] = std::cos(x);  // [2][2]
+    }
 
-	void setRotationY(float y)
-	{
-		m_mat[0][0] = cos(y);
-		m_mat[0][2] = -sin(y);
-		m_mat[2][0] = sin(y);
-		m_mat[2][2] = cos(y);
-	}
+    // Set rotation around Y axis
+    void setRotationY(float y)
+    {
+        m_mat[0] = std::cos(y);   // [0][0]
+        m_mat[2] = -std::sin(y);  // [0][2]
+        m_mat[8] = std::sin(y);   // [2][0]
+        m_mat[10] = std::cos(y);  // [2][2]
+    }
 
-	void setRotationZ(float z)
-	{
-		m_mat[0][0] = cos(z);
-		m_mat[0][1] = sin(z);
-		m_mat[1][0] = -sin(z);
-		m_mat[1][1] = cos(z);
-	}
+    // Set rotation around Z axis
+    void setRotationZ(float z)
+    {
+        m_mat[0] = std::cos(z);   // [0][0]
+        m_mat[1] = std::sin(z);   // [0][1]
+        m_mat[4] = -std::sin(z);  // [1][0]
+        m_mat[5] = std::cos(z);   // [1][1]
+    }
 
-	float getDeterminant()
-	{
-		Vector4D minor, v1, v2, v3;
-		float det;
+    // Get determinant of the matrix
+    float getDeterminant()
+    {
+        Vector4D minor, v1, v2, v3;
 
-		v1 = Vector4D(this->m_mat[0][0], this->m_mat[1][0], this->m_mat[2][0], this->m_mat[3][0]);
-		v2 = Vector4D(this->m_mat[0][1], this->m_mat[1][1], this->m_mat[2][1], this->m_mat[3][1]);
-		v3 = Vector4D(this->m_mat[0][2], this->m_mat[1][2], this->m_mat[2][2], this->m_mat[3][2]);
+        v1 = Vector4D(m_mat[0], m_mat[4], m_mat[8], m_mat[12]);   // First column
+        v2 = Vector4D(m_mat[1], m_mat[5], m_mat[9], m_mat[13]);   // Second column
+        v3 = Vector4D(m_mat[2], m_mat[6], m_mat[10], m_mat[14]);  // Third column
 
+        minor.cross(v1, v2, v3);
+        float det = -(m_mat[3] * minor.x + m_mat[7] * minor.y + 
+                     m_mat[11] * minor.z + m_mat[15] * minor.w);
+        return det;
+    }
 
-		minor.cross(v1, v2, v3);
-		det = -(this->m_mat[0][3] * minor.x + this->m_mat[1][3] * minor.y + this->m_mat[2][3] * minor.z +
-			this->m_mat[3][3] * minor.w);
-		return det;
-	}
+    // Inverse the matrix
+    void inverse()
+    {
+        int a, i, j;
+        Matrix4x4 out;
+        Vector4D v, vec[3];
+        float det = 0.0f;
 
-	void inverse()
-	{
-		int a, i, j;
-		Matrix4x4 out;
-		Vector4D v, vec[3];
-		float det = 0.0f;
+        det = this->getDeterminant();
+        if (!det) return; // If zero or less than zero this matrix is not invertible
+        
+        for (i = 0; i < 4; i++)
+        {
+            for (j = 0; j < 4; j++)
+            {
+                if (j != i)
+                {
+                    a = j;
+                    if (j > i) a = a - 1;
+                    vec[a].x = (get(j, 0));
+                    vec[a].y = (get(j, 1));
+                    vec[a].z = (get(j, 2));
+                    vec[a].w = (get(j, 3));
+                }
+            }
+            v.cross(vec[0], vec[1], vec[2]);
 
-		det = this->getDeterminant();
-		if (!det) return;//If zero of less than Zero this matrix is not invertable
-		for (i = 0; i < 4; i++)
-		{
-			for (j = 0; j < 4; j++)
-			{
-				if (j != i)
-				{
-					a = j;
-					if (j > i) a = a - 1;
-					vec[a].x = (this->m_mat[j][0]);
-					vec[a].y = (this->m_mat[j][1]);
-					vec[a].z = (this->m_mat[j][2]);
-					vec[a].w = (this->m_mat[j][3]);
-				}
-			}
-			v.cross(vec[0], vec[1], vec[2]);
+            out.set(0, i, pow(-1.0f, i) * v.x / det);
+            out.set(1, i, pow(-1.0f, i) * v.y / det);
+            out.set(2, i, pow(-1.0f, i) * v.z / det);
+            out.set(3, i, pow(-1.0f, i) * v.w / det);
+        }
 
-			out.m_mat[0][i] = pow(-1.0f, i) * v.x / det;
-			out.m_mat[1][i] = pow(-1.0f, i) * v.y / det;
-			out.m_mat[2][i] = pow(-1.0f, i) * v.z / det;
-			out.m_mat[3][i] = pow(-1.0f, i) * v.w / det;
-		}
+        this->setMatrix(out);
+    }
 
-		this->setMatrix(out);
-	}
+    // Matrix multiplication
+    void operator *=(const Matrix4x4& matrix)
+    {
+        Matrix4x4 out;
+        for (int i = 0; i < 4; i++)
+        {
+            for (int j = 0; j < 4; j++)
+            {
+                float value = 
+                    get(i, 0) * matrix.get(0, j) +
+                    get(i, 1) * matrix.get(1, j) +
+                    get(i, 2) * matrix.get(2, j) +
+                    get(i, 3) * matrix.get(3, j);
+                out.set(i, j, value);
+            }
+        }
+        setMatrix(out);
+    }
 
-	void operator*=(const Matrix4x4& matrix)
-	{
-		Matrix4x4 out;
-		for (int i = 0; i < 4; i++)
-		{
-			for (int j = 0; j < 4; j++)
-			{
-				out.m_mat[i][j] =
-					m_mat[i][0] * matrix.m_mat[0][j] +
-					m_mat[i][1] * matrix.m_mat[1][j] +
-					m_mat[i][2] * matrix.m_mat[2][j] +
-					m_mat[i][3] * matrix.m_mat[3][j];
-			}
-		}
-		setMatrix(out);
-	}
-	// copy the contents of a 4x4 matrix matrix into this 4x4 matrix 
-	void setMatrix(const Matrix4x4& matrix)
-	{
-		::memcpy(m_mat, matrix.m_mat, sizeof(float) * 16);
-	}
-	//Returns the Z-axis that is available in the third row of the matrix
-	//Useful when we want to get the relative Z of an object 
-	Vector3D getZDirection()
-	{
-		return Vector3D(m_mat[2][0], m_mat[2][1], m_mat[2][2]);
-	}
-	//Useful when we want to get the relative Y of an object 
-	Vector3D getYDirection() 
-	{
-		return Vector3D(m_mat[1][0], m_mat[1][1], m_mat[1][2]);
-	}
-	//Return the x axis that is available in the first row of the matrix
-	//Useful when we want to get the relative X of an object 
-	Vector3D getXDirection()
-	{
-		return Vector3D(m_mat[0][0], m_mat[0][1], m_mat[0][2]);
-	}
-	//Returns the last row where the tranlation of the matrix ios placed
-	Vector3D getTranslation()
-	{
-		return Vector3D(m_mat[3][0], m_mat[3][1], m_mat[3][2]);
-	}
-	void setPerspectiveFovLH(float fov, float aspect, float znear, float zfar)
-	{
-		float yscale = 1.0f / tan(fov / 2.0f);
-		float xscale = yscale / aspect;
+    // Copy contents from another matrix
+    void setMatrix(const Matrix4x4& matrix)
+    {
+        std::memcpy(m_mat, matrix.m_mat, sizeof(float) * 16);
+    }
 
-		m_mat[0][0] = xscale;
-		m_mat[1][1] = yscale;
-		m_mat[2][2]= zfar / (zfar - znear);
-		m_mat[2][3] = 1.0f;
-		m_mat[3][2] = (-znear * zfar) / (zfar - znear);
-		m_mat[3][3] = 0.0f;
-		//m_mat[0][0] = aspect * (1 / tan(fov / 2));
-		//m_mat[1][1] = 1 / tan(fov / 2);
-		//m_mat[2][2] = zfar / (zfar - znear);
-		//m_mat[2][3] = (-zfar * znear) / (zfar - znear);
-		//m_mat[3][2] = 1.0f;
-	}
+    // Get Z direction vector
+    Vector3D getZDirection() const
+    {
+        return Vector3D(m_mat[8], m_mat[9], m_mat[10]); // [2][0], [2][1], [2][2]
+    }
 
-	void setOrthoLH(float width, float height, float near_plane, float far_plane)
-	{
-		setIdentity();
-		m_mat[0][0] = 2.0f / width;
-		m_mat[1][1] = 2.0f / height;
-		m_mat[2][2] = 1.0f / (far_plane - near_plane);
-		m_mat[3][2] = -(near_plane / (far_plane - near_plane));
-	}
+    // Get Y direction vector
+    Vector3D getYDirection() const
+    {
+        return Vector3D(m_mat[4], m_mat[5], m_mat[6]); // [1][0], [1][1], [1][2]
+    }
 
-	~Matrix4x4()
-	{
-	}
+    // Get X direction vector
+    Vector3D getXDirection() const
+    {
+        return Vector3D(m_mat[0], m_mat[1], m_mat[2]); // [0][0], [0][1], [0][2]
+    }
+
+    // Get translation vector
+    Vector3D getTranslation() const
+    {
+        return Vector3D(m_mat[12], m_mat[13], m_mat[14]); // [3][0], [3][1], [3][2]
+    }
+
+    // Set perspective projection matrix
+    void setPerspectiveFovLH(float fov, float aspect, float znear, float zfar)
+    {
+        setIdentity();
+        float yscale = 1.0f / std::tan(fov / 2.0f);
+        float xscale = yscale / aspect;
+
+        m_mat[0] = xscale;   // [0][0]
+        m_mat[5] = yscale;   // [1][1]
+        m_mat[10] = zfar / (zfar - znear);  // [2][2]
+        m_mat[11] = 1.0f;    // [2][3]
+        m_mat[14] = (-znear * zfar) / (zfar - znear);  // [3][2]
+        m_mat[15] = 0.0f;    // [3][3]
+    }
+
+    // Set orthographic projection matrix
+    void setOrthoLH(float width, float height, float near_plane, float far_plane)
+    {
+        setIdentity();
+        m_mat[0] = 2.0f / width;  // [0][0]
+        m_mat[5] = 2.0f / height; // [1][1]
+        m_mat[10] = 1.0f / (far_plane - near_plane);  // [2][2]
+        m_mat[14] = -(near_plane / (far_plane - near_plane)); // [3][2]
+    }
+
+    // Helper method to get element at row i, column j
+    float get(int i, int j) const
+    {
+        return m_mat[i * 4 + j];
+    }
+
+    // Helper method to set element at row i, column j
+    void set(int i, int j, float value)
+    {
+        m_mat[i * 4 + j] = value;
+    }
+
+    ~Matrix4x4()
+    {
+    }
 
 public:
-	float m_mat[4][4] = {};
+    // Matrix stored in row-major order as a flat array
+    // m_mat[i * 4 + j] is equivalent to original m_mat[i][j]
+    float m_mat[16] = {};
 };

@@ -21,7 +21,7 @@ Material::Material(std::string_view path, ResourceManager* manager) : Resource(p
 }
 
 Material::Material(std::string_view path_vs, std::string_view path_ps, ResourceManager* manager) 
-: Resource({path_vs, path_vs}, manager)
+: Resource({path_vs, path_ps}, manager)
 {
 	auto rsys = m_manager->getGame()->getGraphicsEngine()->getRenderSystem();
 

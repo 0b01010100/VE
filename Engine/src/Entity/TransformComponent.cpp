@@ -1,6 +1,6 @@
 #include <Entity/TransformComponent.hpp>
-
 TransformComponent::TransformComponent ( )
+
 {
 }
 

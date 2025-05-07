@@ -62,20 +62,19 @@ Window::Window() {
     }
 
     // Initialize GLAD
-    if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress)) {
+    if (!gladLoadGL()) {
         SDL_GL_DeleteContext(m_glContext);
         SDL_DestroyWindow(m_hwnd);
         SDL_Quit();
         throw std::runtime_error("Failed to initialize GLAD");
     }
+    // Enable depth testing
+    glEnable(GL_DEPTH_TEST);
 
     // Set up OpenGL viewport
     int width, height;
     SDL_GetWindowSize(m_hwnd, &width, &height);
     glViewport(0, 0, width, height);
-
-    // Enable depth testing
-    glEnable(GL_DEPTH_TEST);
 }
 
 Window::~Window() {

@@ -12,8 +12,8 @@ IndexBuffer::IndexBuffer
     if (!system)
         throw std::invalid_argument("Render system is null");
 
-    if (index_count == 0 || indies == nullptr)
-        throw std::invalid_argument("Invalid index data or count");
+    //if (index_count == 0 || indies == nullptr)
+        // throw std::invalid_argument("Invalid index data or count");
 
     // Create OpenGL index buffer
     glGenBuffers(1, &m_ebo);

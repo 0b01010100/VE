@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 project(VE LANGUAGES CXX C)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 
 # Set output directories
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
@@ -43,6 +43,13 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(tinyobjloader)
 
+# FetchContent_Declare(
+#   glm
+#   GIT_REPOSITORY https://github.com/g-truc/glm.git
+#   GIT_TAG 0.9.9.8
+# )
+# FetchContent_MakeAvailable(glm)
+
 # Recursively search for all .cpp source files in the "src" directory
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS Engine/src/*.cpp Game/*.cpp)
 
@@ -57,6 +64,7 @@ target_include_directories(VE PRIVATE
     ${glad_SOURCE_DIR}/include
     ${stb_SOURCE_DIR}
     ${tinyobjloader_SOURCE_DIR}
+    #${glm_SOURCE_DIR}
 )
 
 # Copy the shader folder and its content into the bin folder

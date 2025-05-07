@@ -1,5 +1,7 @@
 #include <MyGame.hpp>
 #include <stdexcept>
+
+#undef main
 int main()
 {
 	try

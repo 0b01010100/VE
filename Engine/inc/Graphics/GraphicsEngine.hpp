@@ -2,13 +2,15 @@
 #include <Prerequisites.hpp>
 #include <set>
 
+
+static float x = 0;
 class GraphicsEngine
 {
 public:
 	//Initialize the GraphicsEngine and DirectX 11 Device
 	GraphicsEngine(Game* game);
 	~GraphicsEngine();
-
+	
 	void update ();
 
 public:
@@ -24,6 +26,4 @@ private:
 	std::set<CameraComponent*> m_cameras;
 	std::set<LightComponent*> m_lights;
 	std::set<TerrainComponent*> m_terrains;
-
-	
 };

@@ -62,6 +62,23 @@ void DeviceContext::setTexture(Texture2DPtr* tex, unsigned int num_textures)
     }
 }
 
+void DeviceContext::setAttributes(Attributes attribs)
+{
+    for (auto attrib : attribs)
+    {
+        glEnableVertexAttribArray(attrib.index);
+        glVertexAttribPointer
+        (
+            attrib.index, 
+            attrib.size, 
+            attrib.type, 
+            attrib.normalized, 
+            attrib.stride, 
+            attrib.offset
+        );
+    }
+}
+
 DeviceContext::~DeviceContext()
 {
     glDeleteProgram(this->m_ShaderProgram.spo);
@@ -76,7 +93,6 @@ void DeviceContext::setRenderMode(RenderMode mode)
     else if (mode == 2) // Point mode
         glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
 }
-
 
 void DeviceContext::setCullMode(CullMode mode)
 {

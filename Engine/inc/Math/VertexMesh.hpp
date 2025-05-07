@@ -1,6 +1,6 @@
 #pragma once
-#include <Math/Vector3D.hpp>
-#include <Math/Vector2D.hpp>
+#include "Vector3D.hpp"
+#include "Vector2D.hpp"
 
 class VertexMesh
 {

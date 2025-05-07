@@ -27,8 +27,8 @@ private:
 	std::unique_ptr< InputSystem > m_inputSystem;
 	std::unique_ptr< GraphicsEngine > m_graphicsEngine;
 	std::unique_ptr< Display > m_display;
-	std::unique_ptr<  ResourceManager > m_resourceManager;
-	std::unique_ptr<  World > m_world;
+	std::unique_ptr< ResourceManager > m_resourceManager;
+	std::unique_ptr< World > m_world;
 
 	bool m_isRunning = true;
 	std::chrono::system_clock::time_point m_previousTime;

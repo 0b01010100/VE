@@ -38,6 +38,8 @@ public:
 	}
 
 public:
-	float x;
-	float y;
+
+		float x;
+		float y;
+
 };

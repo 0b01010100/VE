@@ -20,7 +20,7 @@ UniformBuffer::UniformBuffer
     GLenum error = glGetError();
     if (error != GL_NO_ERROR)
         throw std::runtime_error("OpenGL error after glGenBuffers: " + std::to_string(error));
-
+    
     glBindBuffer(GL_UNIFORM_BUFFER, m_buffer_id);
     error = glGetError();
     if (error != GL_NO_ERROR)

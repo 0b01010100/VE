@@ -1,6 +1,6 @@
 #pragma once
 #include <Prerequisites.hpp>
-
+#define private public
 class DeviceContext
 {
 public:
@@ -13,6 +13,8 @@ public:
     void setVertexBuffer(VertexBufferPtr vb);
     void setIndexBuffer(IndexBufferPtr ib);
     void setTexture(Texture2DPtr* tex, unsigned int num_textures);
+    
+    void setAttributes(Attributes attribs);
 
     void setRenderMode(RenderMode mode);
     void setCullMode(CullMode mode);
