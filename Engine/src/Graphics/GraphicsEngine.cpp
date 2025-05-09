@@ -50,122 +50,6 @@ struct alignas(16) UniformData
 	TerrainData terrain;
 };
 
-
-// Simple 4x4 matrix implementation
-struct Mat4 {
-    float m[16];
-    
-    Mat4() {
-        // Initialize to identity matrix
-        for (int i = 0; i < 16; i++) {
-            m[i] = 0.0f;
-        }
-        m[0] = m[5] = m[10] = m[15] = 1.0f;
-    }
-    
-    void setIdentity() {
-        for (int i = 0; i < 16; i++) {
-            m[i] = 0.0f;
-        }
-        m[0] = m[5] = m[10] = m[15] = 1.0f;
-    }
-    
-    // Matrix multiplication - column-major order
-    Mat4 operator*(const Mat4& other) const {
-        Mat4 result;
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
-                result.m[j*4+i] = 0.0f;
-                for (int k = 0; k < 4; k++) {
-                    result.m[j*4+i] += m[k*4+i] * other.m[j*4+k];
-                }
-            }
-        }
-        return result;
-    }
-};
-
-// Create translation matrix
-Mat4 translate(float x, float y, float z) {
-    Mat4 result;
-    result.m[12] = x;
-    result.m[13] = y;
-    result.m[14] = z;
-    return result;
-}
-
-// Create scaling matrix
-Mat4 scale(float x, float y, float z) {
-    Mat4 result;
-    result.m[0] = x;
-    result.m[5] = y;
-    result.m[10] = z;
-    return result;
-}
-
-// Create rotation matrix around X axis
-Mat4 rotateX(float angle) {
-    Mat4 result;
-    float c = cos(angle);
-    float s = sin(angle);
-    result.m[5] = c;
-    result.m[6] = s;
-    result.m[9] = -s;
-    result.m[10] = c;
-    return result;
-}
-
-// Create rotation matrix around Y axis
-Mat4 rotateY(float angle) {
-    Mat4 result;
-    float c = cos(angle);
-    float s = sin(angle);
-    result.m[0] = c;
-    result.m[2] = -s;
-    result.m[8] = s;
-    result.m[10] = c;
-    return result;
-}
-
-// Create rotation matrix around Z axis
-Mat4 rotateZ(float angle) {
-    Mat4 result;
-    float c = cos(angle);
-    float s = sin(angle);
-    result.m[0] = c;
-    result.m[1] = s;
-    result.m[4] = -s;
-    result.m[5] = c;
-    return result;
-}
-
-// Create perspective projection matrix
-Mat4 perspective(float fov, float aspect, float near, float far) {
-    Mat4 result;
-    float f = 1.0f / tan(fov / 2.0f);
-    
-    result.m[0] = f / aspect;
-    result.m[5] = f;
-    result.m[10] = (far + near) / (near - far);
-    result.m[11] = -1.0f;
-    result.m[14] = (2.0f * far * near) / (near - far);
-    result.m[15] = 0.0f;
-    
-    return result;
-}
-
-// Print matrix (for debugging)
-void printMatrix(const Mat4& matrix) {
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 4; j++) {
-            std::cout << matrix.m[i * 4 + j] << " ";
-        }
-        std::cout << std::endl;
-    }
-    std::cout << std::endl;
-}
-
-
 GraphicsEngine::GraphicsEngine ( Game* game ) : m_game ( game )
 {
 	this->m_render_system = new RenderSystem();
@@ -224,37 +108,27 @@ void GraphicsEngine::update ( )
 			context->setCullMode ( mat->getCullMode ( ) );
 			context->setAttributes( mesh->m_attributes );
 			
-			// uniformData.proj.transpose();
-			// uniformData.view.transpose();
-			// uniformData.world.transpose();
-
-			//mat->setData ( &uniformData, sizeof ( UniformData ) );
-			//context->setUniformBuffer ( mat->m_constant_buffer, 0);
 
 // Define scaling factors
-float scaleX = 2.0f;  // Scale 2x on X axis
-float scaleY = 2.0f;  // No change on Y axis
-float scaleZ = 2.0f;  // Half size on Z axis
+float scaleX = 1.0f;  // Scale 2x on X axis
+float scaleY = 1.0f;  // No change on Y axis
+float scaleZ = 1.0f;  // Half size on Z axis
 
-// Create scaling matrix
-Mat4 scaleMatrix = scale(scaleX, scaleY, scaleZ);
+Matrix4x4 scaleMatrix;
+scaleMatrix.setScale(Vector3D(scaleX, scaleY, scaleZ));
 
-if(this->m_game->getInputSystem()->isKeyDown(Key::W)){
-	x += 0.01;
-}
+Matrix4x4 translateMatrix;
+translateMatrix.setTranslation(Vector3D(0.0f, 0.0f, 0));
 
-// Create translation matrix (moving back 3 units)
-Mat4 translateMatrix = translate(0.0f, 0.0f, 0);
-//x = 0;
-// Apply transformations in order: first scale, then translate
-Mat4 modelMatrix = translateMatrix * scaleMatrix;
+Matrix4x4 modelMatrix = translateMatrix;
+modelMatrix *= scaleMatrix;
+// // Apply projection
+// Mat4 proj = perspective(1.3f, this->m_game->m_display->m_size.width / this->m_game->m_display->m_size.height, 0.01f, 100.0f);
+Matrix4x4 proj;
+proj.setPerspective(1.3f, this->m_game->m_display->m_size.width / this->m_game->m_display->m_size.height, 0.01f, 100.0f);
 
-// Apply projection
-Mat4 proj = perspective(1.3f, this->m_game->m_display->m_size.width / this->m_game->m_display->m_size.height, 0.01f, 100.0f);
-
-// Combine everything
-Mat4 transform = proj * modelMatrix;
-
+Matrix4x4 transform = proj;
+transform *= modelMatrix;
 
 
 			context->setVertexShader ( mat->m_vertex_shader );
@@ -269,7 +143,7 @@ Mat4 transform = proj * modelMatrix;
     		}
 
 			
-			glUniformMatrix4fv(transformLoc, 1, GL_FALSE, transform.m);
+			glUniformMatrix4fv(transformLoc, 1, GL_FALSE, transform.m_mat);
 			context->setTexture ( &mat->m_vec_textures[0], (unsigned int)mat->m_vec_textures.size ( ) );
 
 			auto slot = mesh->getMaterialSlot ( i );

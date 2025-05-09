@@ -3,7 +3,7 @@
 #include <time.h>
 
 
-MyGame::MyGame ( )
+MyGame::MyGame ( ) : Game("Virtunity Game", "Assets\\virtunity.png")
 {
 }
 
@@ -20,10 +20,10 @@ void MyGame::onCreate ( )
 
 	srand ( (ui32)time ( nullptr ) );
 
-	auto sky = getResourceManager ( )->createResource< Texture > ( "Assests/sky.jpg" );
-	auto sphere = getResourceManager ( )->createResource< Mesh > ("Assests/sphere.obj");
+	auto sky = getResourceManager ( )->createResource< Texture > ( "Assets\\sky.jpg" );
+	auto sphere = getResourceManager ( )->createResource< Mesh > ("Assets\\sphere.obj");
 	
-	auto skyMat = getResourceManager ( )->createResource< Material > ( "Assests/SkyBox.vs", "Assests/SkyBox.ps");
+	auto skyMat = getResourceManager ( )->createResource< Material > ( "Assets\\SkyBox.vs", "Assets/SkyBox.ps");
 	skyMat->addTexture (	sky   );
 	
 	// skybox

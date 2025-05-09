@@ -125,8 +125,8 @@ Mesh::Mesh(std::string_view full_path, ResourceManager* manager ) : Resource(ful
 					}
 
 					Vector3D v_tangent, v_binormal;
-					v_binormal = Vector3D::cross(tangent,Vector3D(nx, ny, nz));
-					v_tangent = Vector3D::cross(v_binormal,Vector3D(nx, ny, nz));
+					v_binormal = tangent.cross(Vector3D(nx, ny, nz));
+					v_tangent = v_binormal.cross(Vector3D(nx, ny, nz));
 
 					VertexMesh vertex
 					(
@@ -236,9 +236,9 @@ void Mesh::computeTangents(
 
 	float r = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV1.y * deltaUV2.x);
 	tangent = (deltaPos1 * deltaUV2.y - deltaPos2 * deltaUV1.y);
-	tangent = Vector3D::normalize(tangent);
+	tangent = tangent.normalize();
 	binormal = (deltaPos2 * deltaUV1.x - deltaPos1 * deltaUV2.x);
-	binormal = Vector3D::normalize(binormal);
+	binormal = binormal.normalize();
 }
 
 

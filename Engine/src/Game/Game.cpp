@@ -9,10 +9,10 @@
 #include <Input/InputSystem.hpp>
 #include <Game/World.hpp>
 
-Game::Game ( )
+Game::Game ( std::string_view name, std::string_view icon_path )
 {
 	m_inputSystem = std::make_unique<  InputSystem > ( );
-	m_display = std::make_unique < Display > ( this );
+	m_display = std::make_unique < Display > ( this, name, icon_path );
 	m_graphicsEngine = std::make_unique < GraphicsEngine > ( this );
 	m_resourceManager = std::make_unique < ResourceManager > ( this );
 	m_world = std::make_unique < World > ( this );

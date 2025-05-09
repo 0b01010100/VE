@@ -1,6 +1,7 @@
 #include <Window/Window.hpp>
 #include <stdexcept>
-
+#include <glad/glad.h>
+#include <SDL_image.h>
 void Window::handleEvent(const SDL_Event& event, Window* window) {
     switch (event.type) {
         case SDL_WINDOWEVENT:
@@ -26,14 +27,14 @@ void Window::handleEvent(const SDL_Event& event, Window* window) {
     }
 }
 
-#include <Window/Window.hpp>
-#include <stdexcept>
-#include <glad/glad.h>
-
-Window::Window() {
+Window::Window(std::string_view name, std::string_view icon_path) {
     // SDL Init
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         throw std::runtime_error("Failed to initialize SDL");
+    }
+
+    if (IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG) < 0){
+        throw std::runtime_error("Failed to initialize SDL::image");
     }
 
     // Set OpenGL attributes before window creation
@@ -44,13 +45,29 @@ Window::Window() {
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
     // Create SDL Window
-    m_hwnd = SDL_CreateWindow("SDL2 Window", 
-                                SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
-                                m_size.width, m_size.height, 
-                                SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+    m_hwnd = SDL_CreateWindow
+    (
+        name.data(), 
+        SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
+        m_size.width, m_size.height, 
+        SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE
+    );
+
     if (!m_hwnd) {
         SDL_Quit();
         throw std::runtime_error("Failed to create SDL window");
+    }
+
+    // Load icons for the window
+    if (!icon_path.empty()){
+        SDL_Surface* icon = IMG_Load(icon_path.data());
+        if (icon){
+            SDL_SetWindowIcon(m_hwnd, icon);
+            SDL_FreeSurface(icon);
+            onIconChange(); // first call
+        }else{
+            SDL_Log("Failed to load icon: %s", IMG_GetError());
+        }
     }
 
     // Create OpenGL context
@@ -99,6 +116,18 @@ void Window::onKillFocus() {}
 void Window::onMouseWheel(int delta) {}
 
 void Window::onDestroy() {}
+
+void Window::onIconChange() {}
+
+void Window::setIcon(std::string_view path)
+{
+    
+}
+
+std::string Window::getIcon() const
+{
+    return this->m_icon_path;
+}
 
 Rect Window::getClientSize() const {
     int width, height;

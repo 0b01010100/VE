@@ -92,6 +92,8 @@
         "xhash": "cpp",
         "*.def": "cpp",
         "coroutine": "cpp",
-        "queue": "cpp"
+        "queue": "cpp",
+        "unordered_set": "cpp",
+        "cfenv": "cpp"
     }
 }

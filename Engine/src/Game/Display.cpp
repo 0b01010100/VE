@@ -3,7 +3,8 @@
 #include <Graphics/GraphicsEngine.hpp>
 #include <Graphics/RenderSystem.hpp>
 #include <Graphics/SwapChain.hpp>
-Display::Display (Game* game) : m_game( game )
+Display::Display (Game* game, std::string_view name, std::string_view icon_path) 
+: Window(name, icon_path),  m_game( game )
 {
 	Rect size = getClientSize ( );
 }

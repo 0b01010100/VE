@@ -41,25 +41,43 @@ public:
 		return Vector3D(x * vec.x, y * vec.y, z * vec.z);
 	}
 
-	static Vector3D normalize(const Vector3D& vec) 
+	// Calculate dot product with another vector
+	float dot(const Vector3D& vec) const
 	{
-		Vector3D res = {};
-		float len = sqrt((vec.x * vec.x) + (vec.y * vec.y) + (vec.z * vec.z));
-		if (!len) return Vector3D();
-		
-		//else
-		res.x = vec.x / len;
-		res.y = vec.y / len;
-		res.z = vec.z / len;
-		return res;
+		return x * vec.x + y * vec.y + z * vec.z;
 	}
-	static Vector3D cross(const Vector3D& v1, const Vector3D& v2)
+
+	// Normalize this vector and return the result
+	Vector3D normalize() const
 	{
-		Vector3D res;
-		res.x = (v1.y * v2.z) - (v1.z * v2.y);
-		res.y = (v1.z * v2.x) - (v1.x * v2.z);
-		res.z = (v1.x * v2.y) - (v1.y * v2.x);
-		return res;
+		float len = sqrt(x * x + y * y + z * z);
+		if (len < 1e-6f) return Vector3D(0, 0, 0); // Avoid division by zero
+		
+		float invLen = 1.0f / len;
+		return Vector3D(x * invLen, y * invLen, z * invLen);
+	}
+
+	// Returns the length/magnitude of this vector
+	float length() const
+	{
+		return sqrt(x * x + y * y + z * z);
+	}
+
+	// Returns the squared length/magnitude of this vector
+	// This is faster when you just need to compare lengths
+	float lengthSquared() const
+	{
+		return x * x + y * y + z * z;
+	}
+	
+	// Cross product as an instance method
+	Vector3D cross(const Vector3D& vec) const
+	{
+		return Vector3D(
+			(y * vec.z) - (z * vec.y),
+			(z * vec.x) - (x * vec.z),
+			(x * vec.y) - (y * vec.x)
+		);
 	}
 
 	~Vector3D()

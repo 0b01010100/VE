@@ -7,7 +7,6 @@ InputSystem::InputSystem()
 	
 }
 
-
 InputSystem::~InputSystem()
 {
 }

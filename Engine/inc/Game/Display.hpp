@@ -7,7 +7,7 @@
 class Display : public Window
 {
 public:
-	Display ( Game* game );
+	Display ( Game* game, std::string_view name, std::string_view icon_path );
 	~Display ( );
 protected:
 	virtual void onSize ( const Rect& size );

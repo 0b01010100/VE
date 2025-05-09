@@ -2,11 +2,11 @@
 #include <Prerequisites.hpp>
 #include <Math/Rect.hpp>
 #include <chrono>
-
+#include <string_view>
 class Game
 {
 public:
-	Game ( );
+	Game ( std::string_view name = "Game Window", std::string_view icon_path = "" );
 	virtual ~Game ( );
 
 	void run ( );

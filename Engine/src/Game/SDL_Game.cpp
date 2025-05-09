@@ -15,7 +15,6 @@ void Game::run()
                 m_isRunning = false;
             }
         }
-        
         onInternalUpdate();
     }
     

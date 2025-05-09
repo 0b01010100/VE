@@ -84,9 +84,9 @@ Rect CameraComponent::getScreenArea ( )
 void CameraComponent::computeProjectionMatrix ( )
 {
 	if (m_type == CameraType::Perspective)
-		m_projection.setPerspectiveFovLH ( m_fieldOfView, (f32)m_screenArea.width / (f32)m_screenArea.height, m_nearPlane, m_farPlane );
-	else if (m_type == CameraType::Orthogonal)
-		m_projection.setOrthoLH ((f32)m_screenArea.width, (f32)m_screenArea.height, m_nearPlane, m_farPlane );
+		m_projection.setPerspective ( m_fieldOfView, (f32)m_screenArea.width / (f32)m_screenArea.height, m_nearPlane, m_farPlane );
+	//else if (m_type == CameraType::Orthogonal)
+		//m_projection.setOrthoLH ((f32)m_screenArea.width, (f32)m_screenArea.height, m_nearPlane, m_farPlane );
 		
 }
 
