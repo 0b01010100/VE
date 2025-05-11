@@ -1,6 +1,6 @@
 #pragma once
 #include <Prerequisites.hpp>
-#define private public
+#include <optional>
 class DeviceContext
 {
 public:
@@ -30,8 +30,8 @@ public:
 
 private:
     struct{
-        unsigned int vs, ps, spo;
-    }m_ShaderProgram = {0,0,0};
+        unsigned int vs, ps, spo, ubo;
+    }m_ShaderProgram = {0,0,0,0};
     RenderSystem * m_system;
 private:
     friend class RenderSystem;

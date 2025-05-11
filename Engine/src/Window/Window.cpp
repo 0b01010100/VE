@@ -129,13 +129,13 @@ std::string Window::getIcon() const
     return this->m_icon_path;
 }
 
-Rect Window::getClientSize() const {
+Rect<> Window::getClientSize() const {
     int width, height;
     SDL_GetWindowSize(m_hwnd, &width, &height);
     return {0, 0, width, height};
 }
 
-Rect Window::getScreenSize() const {
+Rect<> Window::getScreenSize() const {
     SDL_DisplayMode mode;
     SDL_GetCurrentDisplayMode(0, &mode);
     return {0, 0, mode.w, mode.h};

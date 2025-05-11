@@ -27,19 +27,19 @@ void Player::onUpdate ( f32 deltaTime )
 
 	if (getInputSystem ( )->isKeyDown(Key::W)) 
 	{
-		m_forward = 1.0f;
+		m_forward = 10.0f;
 	}
 	if (getInputSystem ( )->isKeyDown ( Key::S ))
 	{
-		m_forward = -1.0f;
+		m_forward = -10.0f;
 	}
 	if (getInputSystem ( )->isKeyDown ( Key::A ))
 	{
-		m_rightward = -1.0f;
+		m_rightward = -10.0f;
 	}
 	if (getInputSystem ( )->isKeyDown ( Key::D ))
 	{
-		m_rightward = 1.0f;
+		m_rightward = 10.0f;
 	}
 
 	auto deltaPos = getInputSystem ( )->getDeltaMousePosition ( );
@@ -50,8 +50,8 @@ void Player::onUpdate ( f32 deltaTime )
 	transform->getWorldMatrix ( world );
 
 	auto pos = transform->getPosition ( );
-	pos = pos + world.getZDirection ( ) * m_forward * 58.0f * deltaTime;
-	pos = pos + world.getXDirection ( ) *m_rightward * 58.0f * deltaTime;
+	pos = pos + world.getZDirection ( ) * -m_forward * 58.0f * deltaTime;
+	pos = pos + world.getXDirection ( ) * m_rightward * 58.0f * deltaTime;
 
 	transform->setPosition ( pos );
 	transform->setRotation ( rot );

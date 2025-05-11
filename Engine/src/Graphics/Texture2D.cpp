@@ -58,7 +58,7 @@ Texture2D::Texture2D( std::string_view full_path) {
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-Texture2D::Texture2D(const Rect& size, Type type) 
+Texture2D::Texture2D(const Rect<>& size, Type type) 
     : m_size(size), m_type(type) {
     glGenTextures(1, &m_texture);
     glBindTexture(GL_TEXTURE_2D, m_texture);
@@ -90,7 +90,7 @@ Texture2D::Texture2D(const Rect& size, Type type)
     }
 }
 
-Rect Texture2D::getSize()
+Rect<> Texture2D::getSize()
 {
     return m_size;
 }

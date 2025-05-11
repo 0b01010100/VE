@@ -1,17 +1,7 @@
-# Add a custom command to copy SDL2 and SDL2_image DLLs to the output directory on Windows
-if(WIN32)
-    add_custom_command(TARGET VE POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "$<TARGET_FILE:SDL2::SDL2>"
-            "$<TARGET_FILE:SDL2_image::SDL2_image>"
-            "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
-        COMMENT "Copying SDL2 and SDL2_image DLLs to output directory"
-    )
-endif()
 cmake_minimum_required(VERSION 3.10)
 project(VE LANGUAGES CXX C)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 # Set output directories
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
@@ -22,9 +12,9 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 include(FetchContent)
 
 # Configure SDL2 options - MUST be set before FetchContent_MakeAvailable
-option(SDL_SHARED "Build a SDL shared library" ON)
-option(SDL_STATIC "Build a SDL static library" OFF)
-option(BUILD_SHARED_LIBS "Build shared libraries" ON)
+option(SDL_SHARED "Build a SDL shared library" OFF)
+option(SDL_STATIC "Build a SDL static library" ON)
+option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 
 # Download SDL2
 FetchContent_Declare(
@@ -45,11 +35,11 @@ FetchContent_Declare(
 set(SDL2IMAGE_INSTALL OFF CACHE BOOL "" FORCE)
 set(SDL2IMAGE_VENDORED ON CACHE BOOL "" FORCE)
 set(SDL2IMAGE_SAMPLES OFF CACHE BOOL "" FORCE)
-set(SDL2IMAGE_SHARED_LIBS ON CACHE BOOL "" FORCE)
-set(SDL2IMAGE_DEPS_SHARED ON CACHE BOOL "" FORCE)
-# Match SDL2 build type - both must be shared
-set(SDL2IMAGE_SDL2_SHARED ON CACHE BOOL "" FORCE)
-set(SDL2IMAGE_SDL2_STATIC OFF CACHE BOOL "" FORCE)
+set(SDL2IMAGE_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+set(SDL2IMAGE_DEPS_SHARED OFF CACHE BOOL "" FORCE)
+# Match SDL2 build type - both must be static
+set(SDL2IMAGE_SDL2_SHARED OFF CACHE BOOL "" FORCE)
+set(SDL2IMAGE_SDL2_STATIC ON CACHE BOOL "" FORCE)
 # Disable image formats you don't need to reduce dependencies
 set(SDL2IMAGE_JPG ON CACHE BOOL "" FORCE)
 set(SDL2IMAGE_PNG ON CACHE BOOL "" FORCE)
@@ -104,21 +94,10 @@ target_include_directories(VE PRIVATE
 # Copy the shader folder and its content into the bin folder
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/Assets DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 
-# Explicitly find required packages for Windows builds
-if(WIN32)
-    # Add Windows-specific libraries that SDL2 might need as dependencies
-    find_package(OpenGL REQUIRED)
-    set(WINDOWS_LIBS 
-        kernel32 user32 gdi32 winmm imm32 ole32 oleaut32 
-        version uuid advapi32 setupapi shell32 dinput8
-    )
-endif()
-
-# Link libraries
+# Link libraries - use the static versions
 target_link_libraries(VE PRIVATE 
     SDL2::SDL2
-    SDL2_image::SDL2_image
+    SDL2_image
     glad 
     tinyobjloader
-    ${WINDOWS_LIBS}
 )

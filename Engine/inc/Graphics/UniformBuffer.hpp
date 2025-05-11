@@ -1,28 +1,33 @@
 #pragma once
 #include <Prerequisites.hpp>
+#include <cstddef>
+#include <stdexcept>
 
-class UniformBuffer
+class UniformBuffer 
 {
 public:
-    UniformBuffer
-    (
-        void* buffer, 
-        unsigned int buffer_size, 
-        SaveType save_type, 
-        RenderSystem* system
-    );
+    // Create an empty uniform buffer
+    UniformBuffer(SaveType save_type, RenderSystem* system);
+    
+    // Create and initialize a uniform buffer
+    UniformBuffer(void* buffer, unsigned int buffer_size, SaveType save_type, RenderSystem* system);
+    
+    // Destructor - cleans up OpenGL resources
     ~UniformBuffer();
-public:
-    void Update(void* buffer, size_t size);
-    inline void Update(void* buffer){Update(buffer, 0);}
-    unsigned int GetSize() const { return m_buffer_size; }
-    SaveType GetSaveType() const { return m_save_type;}
+    
+    // Update the buffer data
+    void Update(void* buffer, size_t size_to_update);
+    
+    // Accessors
+    unsigned int GetBufferSize() const;
+
 private:
+    unsigned int m_buffer_id;
+    unsigned int m_buffer_size;
     RenderSystem* m_system;
-    unsigned int m_buffer_id = 0;
-    unsigned int m_buffer_size = 0;
-    SaveType m_save_type = SaveType::STATIC;
+    SaveType m_save_type;
+    int m_binding_point;
 private:
-    friend class DeviceContext;
     friend class RenderSystem;
+    friend class DeviceContext;
 };

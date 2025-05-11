@@ -40,8 +40,8 @@ public:
     void setIcon(std::string_view path);
     
     std::string getIcon() const;
-    Rect getClientSize() const;
-    Rect getScreenSize() const;
+    Rect<> getClientSize() const;
+    Rect<> getScreenSize() const;
     bool shouldClose() const;
     void pollEvents();
 

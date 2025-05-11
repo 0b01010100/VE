@@ -1,34 +1,42 @@
 #pragma once
 #include <Prerequisites.hpp>
+#include <SDL2/SDL.h>
 #include <Math/Vector2D.hpp>
 #include <Math/Rect.hpp>
 
 class InputSystem
 {
 public:
-	InputSystem();
-	~InputSystem();
-public:
-	bool isKeyDown ( const Key& key );
-	bool isKeyUp ( const Key& key );
-	Vector2D getDeltaMousePosition ( );
+    InputSystem();
+    ~InputSystem();
 
-	void lockCursor ( bool lock );
-	void SetlockArea( const Rect& area );
+    // Key state checking
+    bool isKeyDown(const Key& key);
+    bool isKeyUp(const Key& key);
+    
+    // Mouse handling
+    Vector2D getDeltaMousePosition();
+    void lockCursor(bool lock);
+    void SetlockArea(const Rect<float>& area);
+    
+    // Frame update
+    void update();
 
-	void update();
 private:
-	short getInternalKeyCode ( const Key& key );
-private:
-
-	short m_keys_state[256] = {};
-	short m_old_keys_state[256] = {};
-	short m_final_keys_state[256] = {};
-
-	bool m_cursorLocked = false;
-	Rect m_lockArea;
-	Vector2D m_lockAreaCenter;
-
-	Vector2D m_deltaMousePos;
-	Vector2D m_old_mouse_pos;
+    // Key state storage
+    short m_keys_state[256] = { 0 };
+    short m_old_keys_state[256] = { 0 };
+    short m_final_keys_state[256] = { 0 };
+    
+    // Mouse state
+    Vector2D m_old_mouse_pos;
+    Vector2D m_deltaMousePos;
+    Rect<float> m_lockArea;
+    Vector2D m_lockAreaCenter;
+    bool m_cursorLocked;
+    
+    // Helper methods
+    short getInternalKeyCode(const Key& key);
+    SDL_Scancode getSDLScancode(short keyCode);
+    void updateMouseButtonState(const Key& key, bool isPressed);
 };

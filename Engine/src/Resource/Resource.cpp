@@ -1,5 +1,6 @@
 #include <Resource/Resource.hpp>
 
+// turn std::vector to std::span+
 Resource::Resource(std::vector<std::string_view> full_paths, ResourceManager* manager ) 
 : m_manager(manager)
 {

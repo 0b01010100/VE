@@ -27,8 +27,8 @@ public:
 	void setType ( const CameraType& type );
 	CameraType getType ( );
 
-	void setScreenArea ( const Rect& area );
-	Rect getScreenArea ( );
+	void setScreenArea ( const Rect<>& area );
+	Rect<> getScreenArea ( );
 
 private:
 	void computeProjectionMatrix ( );
@@ -41,7 +41,7 @@ private:
 	f32 m_farPlane = 100.0f; 
 	f32 m_fieldOfView = 1.3f;
 	CameraType m_type = CameraType::Perspective;
-	Rect m_screenArea;
+	Rect<> m_screenArea;
 
 
 };

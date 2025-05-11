@@ -70,13 +70,13 @@ CameraType CameraComponent::getType ( )
 	return m_type;
 }
 
-void CameraComponent::setScreenArea ( const Rect& area )
+void CameraComponent::setScreenArea ( const Rect<>& area )
 {
 	m_screenArea = area;
 	computeProjectionMatrix ( );
 }
 
-Rect CameraComponent::getScreenArea ( )
+Rect<> CameraComponent::getScreenArea ( )
 {
 	return m_screenArea;
 }
@@ -84,10 +84,20 @@ Rect CameraComponent::getScreenArea ( )
 void CameraComponent::computeProjectionMatrix ( )
 {
 	if (m_type == CameraType::Perspective)
-		m_projection.setPerspective ( m_fieldOfView, (f32)m_screenArea.width / (f32)m_screenArea.height, m_nearPlane, m_farPlane );
-	//else if (m_type == CameraType::Orthogonal)
-		//m_projection.setOrthoLH ((f32)m_screenArea.width, (f32)m_screenArea.height, m_nearPlane, m_farPlane );
-		
+		m_projection.setPerspective ( 
+			m_fieldOfView, 
+			(f32)m_screenArea.width / (f32)m_screenArea.height, 
+			m_nearPlane, 
+			m_farPlane 
+		);
+	else if (m_type == CameraType::Orthogonal)
+		m_projection.setOrtho (
+			(f32)m_screenArea.left,
+			(f32)m_screenArea.width, 
+			(f32)m_screenArea.height,
+			(f32)m_screenArea.top,
+			m_nearPlane, m_farPlane
+		);	
 }
 
 void CameraComponent::onCreateInternal ( )

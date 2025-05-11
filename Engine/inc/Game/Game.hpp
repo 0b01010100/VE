@@ -21,7 +21,7 @@ protected:
 	virtual void onUpdate ( float deltaTime ) {}
 	virtual void onQuit ( ) {}
 private:
-	void onDisplaySize ( const Rect& size );
+	void onDisplaySize ( const Rect<>& size );
 	void onInternalUpdate ( );
 private:
 	std::unique_ptr< InputSystem > m_inputSystem;

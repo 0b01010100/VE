@@ -17,7 +17,11 @@ Game::Game ( std::string_view name, std::string_view icon_path )
 	m_resourceManager = std::make_unique < ResourceManager > ( this );
 	m_world = std::make_unique < World > ( this );
 
-	m_inputSystem->SetlockArea ( m_display->getClientSize ( ) );
+	union cast{
+		Rect<> ri;
+		Rect<float> rf;
+	}type_cast = {.ri = m_display->getClientSize ( )};
+	m_inputSystem->SetlockArea ( type_cast.rf );
 }
 Game::~Game ( ) {}
 GraphicsEngine* Game::getGraphicsEngine ( )
@@ -36,11 +40,14 @@ ResourceManager* Game::getResourceManager ( )
 {
 	return m_resourceManager.get();
 }
-void Game::onDisplaySize ( const Rect& size )
+void Game::onDisplaySize ( const Rect<>& size )
 {
-	m_inputSystem->SetlockArea ( m_display->getClientSize ( ) );
+	union cast{
+		Rect<> ri;
+		Rect<float> rf;
+	}type_cast = {.ri = m_display->getClientSize ( )};
+	m_inputSystem->SetlockArea ( type_cast.rf );
 	onInternalUpdate ( );
-
 }
 void Game::onInternalUpdate ( )
 {

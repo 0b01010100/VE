@@ -2,6 +2,7 @@
 #include <Graphics/RenderSystem.hpp>
 #include <Graphics/DeviceContext.hpp>
 #include <Graphics/SwapChain.hpp>
+#include <Graphics/UniformBuffer.hpp>
 
 #include <Resource/ResourceManager.hpp>
 #include <Resource/Mesh.hpp>
@@ -25,7 +26,6 @@
 #include <Math/Rect.hpp>
 
 #include <Input/InputSystem.hpp>
-#include <glad/glad.h>
 
 struct alignas(16) LightData
 {
@@ -37,7 +37,6 @@ struct alignas(16) TerrainData
 {
 	Vector4D size;
 	f32 heightMapSize = 0.0f;// the number of texels along one edge of the height map
-	f32 _padding[3]; // padding to complete 16-byte alignment
 };
 
 struct alignas(16) UniformData
@@ -47,8 +46,9 @@ struct alignas(16) UniformData
 	Matrix4x4 proj;
 	Vector4D cameraPosition;
 	LightData light;
-	TerrainData terrain;
+	//TerrainData terrain;
 };
+
 
 GraphicsEngine::GraphicsEngine ( Game* game ) : m_game ( game )
 {
@@ -61,13 +61,12 @@ GraphicsEngine::GraphicsEngine ( Game* game ) : m_game ( game )
 		screen_size.width, 
 		screen_size.height 
 	);
+	this->m_global_ubo_buffer = std::make_shared<UniformBuffer>( SaveType::DYNAMIC, this->getRenderSystem() );
 }
 
 void GraphicsEngine::update ( )
 {
 	auto context = m_render_system->getImmediateDeviceContext ( );
-
-	glEnable(GL_DEPTH_TEST);
 
 	auto swapChain = m_game->m_display->m_swapChain;
 
@@ -75,23 +74,31 @@ void GraphicsEngine::update ( )
 	auto winSize = m_game->m_display->getClientSize ( );
 	context->setViewportSize ( winSize.width, winSize.height );
 
-	
-	UniformData uniformData = {};
+	UniformData m_global_ubo = {};
 
 	for (auto c : m_cameras)
 	{
 		auto t = c->getEntity ( )->getTransform ( );
-		uniformData.cameraPosition = t->getPosition ( );
+		m_global_ubo.cameraPosition = t->getPosition ( );
 		c->setScreenArea ( winSize );
-		c->getViewMatrix ( uniformData.view );
-		c->getProjectionMatrix ( uniformData.proj );
+		c->getViewMatrix ( m_global_ubo.view );
+		//m_global_ubo.view.setLookAt({0,0,5},{0,0,0},{0,1,0});
+		c->getProjectionMatrix ( m_global_ubo.proj );
 	}
 
-    // Use our shader program - already binded
+	for (auto l : m_lights)
+	{
+		auto t = l->getEntity ( )->getTransform ( );
+		Matrix4x4 w;
+		t->getWorldMatrix ( w );
+		m_global_ubo.light.direction = w.getZDirection ( );
+		m_global_ubo.light.color = l->getColor ( );
+	}
+
 	for (auto m : m_meshes)
 	{
 		auto transform = m->getEntity ( )->getTransform ( );
-		transform->getWorldMatrix ( uniformData.world );
+		transform->getWorldMatrix ( m_global_ubo.world );
 		
 		auto mesh = m->getMesh ();
 		
@@ -109,41 +116,12 @@ void GraphicsEngine::update ( )
 			context->setAttributes( mesh->m_attributes );
 			
 
-// Define scaling factors
-float scaleX = 1.0f;  // Scale 2x on X axis
-float scaleY = 1.0f;  // No change on Y axis
-float scaleZ = 1.0f;  // Half size on Z axis
-
-Matrix4x4 scaleMatrix;
-scaleMatrix.setScale(Vector3D(scaleX, scaleY, scaleZ));
-
-Matrix4x4 translateMatrix;
-translateMatrix.setTranslation(Vector3D(0.0f, 0.0f, 0));
-
-Matrix4x4 modelMatrix = translateMatrix;
-modelMatrix *= scaleMatrix;
-// // Apply projection
-// Mat4 proj = perspective(1.3f, this->m_game->m_display->m_size.width / this->m_game->m_display->m_size.height, 0.01f, 100.0f);
-Matrix4x4 proj;
-proj.setPerspective(1.3f, this->m_game->m_display->m_size.width / this->m_game->m_display->m_size.height, 0.01f, 100.0f);
-
-Matrix4x4 transform = proj;
-transform *= modelMatrix;
-
-
 			context->setVertexShader ( mat->m_vertex_shader );
 			context->setPixelShader ( mat->m_pixel_shader );
-
-			GLuint transformLoc = glGetUniformLocation(this->getRenderSystem()->m_imm_device_context->m_ShaderProgram.spo, "transform");
-
-
-			//context->setUniformBuffer(mat->m_constant_buffer, 0);
-    		if (transformLoc == -1) {
-       	 		std::cerr << "Could not find uniform location for 'transform'" << std::endl;
-    		}
-
 			
-			glUniformMatrix4fv(transformLoc, 1, GL_FALSE, transform.m_mat);
+			this->m_global_ubo_buffer->Update(&m_global_ubo, sizeof(m_global_ubo));
+			context->setUniformBuffer(m_global_ubo_buffer, 0);
+
 			context->setTexture ( &mat->m_vec_textures[0], (unsigned int)mat->m_vec_textures.size ( ) );
 
 			auto slot = mesh->getMaterialSlot ( i );
@@ -151,7 +129,7 @@ transform *= modelMatrix;
 		}
 	}
 
-    this->m_game->m_display->m_swapChain->present(true);
+    swapChain->present(true);
 }
 
 RenderSystem* GraphicsEngine::getRenderSystem ( )

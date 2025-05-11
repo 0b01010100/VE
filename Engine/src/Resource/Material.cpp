@@ -12,7 +12,7 @@
 Material::Material(std::string_view path, ResourceManager* manager) : Resource(path, manager)
 {
 	auto rsys = m_manager->getGame()->getGraphicsEngine()->getRenderSystem();
-
+	
 	m_vertex_shader = rsys->createVertexShader(path);
 	if (!m_vertex_shader) std::runtime_error("Material not created successfully");
 
@@ -54,9 +54,9 @@ void Material::setData(void* data, unsigned int size)
 {
 	auto rsys = m_manager->getGame()->getGraphicsEngine()->getRenderSystem();
 	if (!m_constant_buffer)
-		m_constant_buffer = rsys->createUniformBuffer(data, size, SaveType::STATIC);
+		m_constant_buffer = rsys->createUniformBuffer(data, size, SaveType::DYNAMIC);
 	else
-		m_constant_buffer->Update(data);
+		m_constant_buffer->Update(data, size);
 }
 
 void Material::setCullMode(const CullMode& mode)

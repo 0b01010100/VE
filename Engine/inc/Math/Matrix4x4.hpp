@@ -356,10 +356,6 @@ public:
         m_mat[row + col*4] = value;
     }
 
-    ~Matrix4x4()
-    {
-    }
-
 public:
     // Matrix stored in column-major order as a flat array for OpenGL
     // m_mat[row + col*4] is equivalent to original m_mat[row][col]

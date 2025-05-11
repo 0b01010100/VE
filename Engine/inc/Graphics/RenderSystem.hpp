@@ -21,6 +21,11 @@ public:
         unsigned int buffer_size,
         SaveType save_type
     );
+    UniformBufferPtr createUniformBuffer
+    (
+        SaveType save_type
+    );
+
     IndexBufferPtr createIndexBuffer
     (
         void* indies, 
@@ -28,7 +33,7 @@ public:
         unsigned int index_count
     );
     Texture2DPtr createTexture(std::string_view full_path);
-    Texture2DPtr createTexture(const Rect& size, Type type);
+    Texture2DPtr createTexture(const Rect<>& size, Type type);
     DeviceContextPtr getImmediateDeviceContext();
 private:
     DeviceContextPtr m_imm_device_context;

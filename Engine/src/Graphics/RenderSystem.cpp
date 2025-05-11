@@ -41,7 +41,20 @@ UniformBufferPtr RenderSystem::createUniformBuffer
     SaveType save_type
 )
 {
-    return std::make_shared<UniformBuffer>(buffer, buffer_size, save_type, this);
+    return std::make_shared<UniformBuffer>(
+        buffer, buffer_size, save_type, this
+    );
+}
+
+
+UniformBufferPtr RenderSystem::createUniformBuffer
+(
+    SaveType save_type
+)
+{
+    return std::make_shared<UniformBuffer>(
+        save_type, this
+    );
 }
 
 IndexBufferPtr RenderSystem::createIndexBuffer
@@ -59,7 +72,7 @@ Texture2DPtr RenderSystem::createTexture(const std::string_view full_path)
     return std::make_shared<Texture2D>(full_path);
 }
 
-Texture2DPtr RenderSystem::createTexture(const Rect& size, Type type)
+Texture2DPtr RenderSystem::createTexture(const Rect<>& size, Type type)
 {
     return std::make_shared<Texture2D>(size, type);
 }
